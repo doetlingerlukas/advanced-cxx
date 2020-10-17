@@ -25,7 +25,7 @@ class Init: public Command {
         return 1;
       }
 
-      fs::create_directory(".lit");
+      fs::create_directories(".lit/revisions");
       cout << "Initialized lit repository at " << fs::absolute(".lit") << endl;
 
       return 0;
