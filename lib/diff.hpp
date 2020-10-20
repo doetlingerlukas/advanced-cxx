@@ -18,22 +18,27 @@ namespace fs = std::filesystem;
 
 using namespace std;
 
-string execute_diff(string file) {
+pair<int, string> execute_diff(string file) {
   array<char, 128> buffer;
   string result;
-  unique_ptr<FILE, decltype(&pclose)> pipe(popen(string("diff -uN .lit/previous/" + file + " " + file).c_str(), "r"), pclose);
-  if (!pipe) {
-    throw runtime_error("popen() failed!");
+
+  auto pipe = popen(string("diff -uN .lit/previous/" + file + " " + file).c_str(), "r");
+
+  if (!pipe) throw runtime_error("popen() failed!");
+
+  while (!feof(pipe)) {
+    if (fgets(buffer.data(), 128, pipe) != nullptr) result += buffer.data();
   }
-  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-    result += buffer.data();
-  }
-  return result;
+
+  auto status = pclose(pipe);
+
+  return make_pair(status, result);
 }
 
 class Diff {
   public:
     string content;
+    map<string, char> status_map;
 
     Diff() {
       auto current_path = fs::current_path();
@@ -42,11 +47,26 @@ class Diff {
         if (p.is_directory() && p.path().filename().string() != ".lit") {
           for (auto& sp : fs::recursive_directory_iterator(p)) {
             if (!sp.is_directory()) {
-              content += execute_diff(fs::relative(sp.path(), current_path).string());
+              auto pair = execute_diff(fs::relative(sp.path(), current_path).string());
+              content += pair.second;
+              if (pair.first == 1) status_map.insert(this->add_to_status(sp));
             }
           }
         } else if (!p.is_directory()) {
-          content += execute_diff(fs::relative(p.path(), current_path).string());
+          auto pair = execute_diff(fs::relative(p.path(), current_path).string());
+          content += pair.second;
+          if (pair.first == 1) status_map.insert(this->add_to_status(p));
+        }
+      }
+
+      auto previous_dir = fs::absolute(fs::path(".lit/previous"));
+      for (auto& p : fs::recursive_directory_iterator(previous_dir)) {
+        if (!p.is_directory()) {
+          auto relative = fs::relative(p.path(), previous_dir);
+          if (!fs::exists(current_path / relative)) {
+            content += execute_diff(relative.string()).second;
+            status_map.insert(make_pair(relative.string(), 'D'));
+          }
         }
       }
     }
@@ -56,5 +76,21 @@ class Diff {
       file.open(filepath);
       file << this->content;
       file.close();
+    }
+
+    void print_status() const {
+      for (auto& p : status_map) {
+        cout << p.second << " " << p.first << endl;
+      }
+    }
+
+  private:
+    static pair<string, char> add_to_status(const fs::directory_entry& p) {
+      auto relative = fs::relative(p.path(), fs::current_path());
+      auto previous = ".lit/previous/" / relative;
+      if (fs::exists(previous)) {
+        return make_pair(relative.string(), 'M');
+      }
+      return make_pair(relative.string(), 'A');
     }
 };

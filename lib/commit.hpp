@@ -43,9 +43,19 @@ class Commit: public Command {
       ofstream commit_file;
       commit_file.open(revision_dir + "/r" + to_string(revision) + ".lit");
       commit_file << "message='" << arguments.at(0) << "'" << endl;
-      commit_file << "time=" << localtime(&time) << endl;
+      commit_file << "time=" << put_time(localtime(&time), "%Y-%m-%d %X") << endl;
       commit_file << "parent=" << (revision > 0 ? ("r" + to_string(revision)) : "none") << endl;
-      commit_file.close(); 
+      commit_file.close();
+
+      fs::remove_all(fs::current_path() / ".lit/previous");
+      fs::create_directories(".lit/previous");
+      for (auto& p : fs::directory_iterator(fs::current_path())) {
+        if (p.path().filename().string() != ".lit") {
+          const auto copy_options = fs::copy_options::overwrite_existing
+            | fs::copy_options::recursive;
+          fs::copy(p, fs::absolute(".lit/previous") / fs::relative(p.path(), fs::current_path()), copy_options);
+        }
+      }
 
       return 0;
     }
