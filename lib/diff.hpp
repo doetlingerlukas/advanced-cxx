@@ -7,7 +7,6 @@
 
 #include <string>
 #include <filesystem>
-#include <cstdio>
 #include <array>
 #include <memory>
 #include <iostream>
@@ -36,6 +35,11 @@ pair<int, string> execute_diff(string file) {
   return make_pair(status, result);
 }
 
+bool contains_lit_path(const fs::path& base) {
+  auto sub = fs::absolute(".lit");
+  return search(base.begin(), base.end(), sub.begin(), sub.end()) != base.end();
+}
+
 class Diff {
   public:
     string content;
@@ -44,17 +48,9 @@ class Diff {
     Diff() {
       auto current_path = fs::current_path();
 
-      for (auto& p : fs::directory_iterator(current_path)) {
-        if (p.is_directory() && p.path().filename().string() != ".lit") {
-          for (auto& sp : fs::recursive_directory_iterator(p)) {
-            if (!sp.is_directory()) {
-              auto pair = execute_diff(fs::relative(sp.path(), current_path).string());
-              content += pair.second;
-              if (pair.first == 1) status_map.insert(this->add_to_status(sp));
-            }
-          }
-        } else if (!p.is_directory()) {
-          auto pair = execute_diff(fs::relative(p.path(), current_path).string());
+      for (auto& p: fs::recursive_directory_iterator(current_path)) {
+        if (!(p.is_directory() || contains_lit_path(p))) {
+          auto pair = execute_diff(fs::relative(p, current_path).string());
           content += pair.second;
           if (pair.first == 1) status_map.insert(this->add_to_status(p));
         }
@@ -62,12 +58,10 @@ class Diff {
 
       auto previous_dir = fs::absolute(fs::path(".lit/previous"));
       for (auto& p : fs::recursive_directory_iterator(previous_dir)) {
-        if (!p.is_directory()) {
-          auto relative = fs::relative(p.path(), previous_dir);
-          if (!fs::exists(current_path / relative)) {
-            content += execute_diff(relative.string()).second;
-            status_map.insert(make_pair(relative.string(), 'D'));
-          }
+        auto relative = fs::relative(p, previous_dir);
+        if (!(p.is_directory() || fs::exists(current_path / relative))) {
+          content += execute_diff(relative.string()).second;
+          status_map.insert(make_pair(relative.string(), 'D'));
         }
       }
     }
@@ -87,8 +81,8 @@ class Diff {
 
   private:
     static pair<string, char> add_to_status(const fs::directory_entry& p) {
-      auto relative = fs::relative(p.path(), fs::current_path());
-      auto previous = ".lit/previous/" / relative;
+      auto relative = fs::relative(p, fs::current_path());
+      auto previous = ".lit/previous" / relative;
       if (fs::exists(previous)) {
         return make_pair(relative.string(), 'M');
       }
