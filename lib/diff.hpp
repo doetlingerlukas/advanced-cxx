@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <algorithm>
 
 namespace fs = std::filesystem;
 
