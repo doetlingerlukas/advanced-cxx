@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include <filesystem>
-#include <fstream>
 
 #include <constants.hpp>
 #include <command.hpp>
@@ -11,14 +10,14 @@ namespace fs = std::filesystem;
 
 using namespace std;
 
-class ShowCommand: public Command {
+class CheckoutCommand: public Command {
   public:
     string name() const {
-      return "show";
+      return "checkout";
     }
 
     string description() const {
-      return "Inspect a given commit.";
+      return "Resets the state of all files to the given commit's state. All un-committed changes are dropped upon checkout.";
     }
 
     int execute(vector<string> arguments) const {
@@ -33,21 +32,7 @@ class ShowCommand: public Command {
         return 1;
       }
 
-      {
-        ifstream commit_file(commit_dir.string() + "/" + arguments.front() + ".lit");
-        if (commit_file.is_open()) {
-          cout << commit_file.rdbuf();
-        }
-      }
-
-      cout << endl;
-
-      {
-        ifstream patch_file(commit_dir.string() + "/.patch");
-        if (patch_file.is_open()) {
-          cout << patch_file.rdbuf();
-        }
-      }
+      
 
       return 0;
     }

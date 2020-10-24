@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 using namespace std;
 
-class Init: public Command {
+class InitCommand: public Command {
   public:
     string name() const {
       return "init";

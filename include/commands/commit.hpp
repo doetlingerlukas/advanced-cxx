@@ -13,7 +13,7 @@ namespace fs = std::filesystem;
 
 using namespace std;
 
-class Commit: public Command {
+class CommitCommand: public Command {
   public:
     string name() const {
       return "commit";

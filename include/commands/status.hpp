@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class Status: public Command {
+class StatusCommand: public Command {
   public:
     string name() const {
       return "status";

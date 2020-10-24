@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class Help: public Command {
+class HelpCommand: public Command {
   public:
     string name() const {
       return "help";
