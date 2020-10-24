@@ -4,7 +4,8 @@
 #include <filesystem>
 #include <fstream>
 
-#include "command.hpp"
+#include <constants.hpp>
+#include <command.hpp>
 
 namespace fs = std::filesystem;
 
@@ -26,7 +27,7 @@ class Show: public Command {
         return 1;
       }
 
-      fs::path commit_dir = ".lit/revisions/" + arguments.front();
+      fs::path commit_dir = string(lit::REVISION_DIR) + "/" + arguments.front();
       if (!fs::exists(commit_dir)) {
         cerr << "Unknown commit." << endl;
         return 1;

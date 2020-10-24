@@ -3,8 +3,8 @@
 #include <vector>
 #include <filesystem>
 
-#include "command.hpp"
-#include "diff.hpp"
+#include <command.hpp>
+#include <diff.hpp>
 
 using namespace std;
 

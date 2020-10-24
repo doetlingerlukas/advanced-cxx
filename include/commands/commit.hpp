@@ -5,6 +5,7 @@
 #include <fstream>
 #include <chrono>
 
+#include <constants.hpp>
 #include <command.hpp>
 #include <diff.hpp>
 
@@ -29,11 +30,11 @@ class Commit: public Command {
       }
 
       auto revision = 0;
-      for (auto& d : fs::directory_iterator(".lit/revisions")) {
+      for (auto& d : fs::directory_iterator(lit::REVISION_DIR)) {
         revision++;
       }
 
-      string revision_dir(".lit/revisions/r" + to_string(revision));
+      string revision_dir(string(lit::REVISION_DIR) + "/r" + to_string(revision));
       fs::create_directories(revision_dir);
 
       Diff diff;
@@ -47,13 +48,13 @@ class Commit: public Command {
       commit_file << "parent=" << (revision > 0 ? ("r" + to_string(revision)) : "none") << endl;
       commit_file.close();
 
-      fs::remove_all(fs::current_path() / ".lit/previous");
-      fs::create_directories(".lit/previous");
+      fs::remove_all(fs::current_path() / lit::PREVIOUS_DIR);
+      fs::create_directories(lit::PREVIOUS_DIR);
       for (auto& p : fs::directory_iterator(fs::current_path())) {
         if (p.path().filename().string() != ".lit") {
           const auto copy_options = fs::copy_options::overwrite_existing
             | fs::copy_options::recursive;
-          fs::copy(p, fs::absolute(".lit/previous") / fs::relative(p.path(), fs::current_path()), copy_options);
+          fs::copy(p, fs::absolute(lit::PREVIOUS_DIR) / fs::relative(p.path(), fs::current_path()), copy_options);
         }
       }
 

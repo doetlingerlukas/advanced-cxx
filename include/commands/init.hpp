@@ -3,7 +3,8 @@
 #include <vector>
 #include <filesystem>
 
-#include "command.hpp"
+#include <constants.hpp>
+#include <command.hpp>
 
 namespace fs = std::filesystem;
 
@@ -20,13 +21,14 @@ class Init: public Command {
     }
 
     int execute(vector<string> arguments) const {
-      if (fs::exists(".lit")) {
-        cerr << "Repository already initialized at " << fs::absolute(".lit") << endl;
+      if (fs::exists(lit::DIR)) {
+        cerr << "Repository already initialized at " << fs::absolute(lit::DIR) << endl;
         return 1;
       }
 
-      fs::create_directories(".lit/revisions");
-      cout << "Initialized lit repository at " << fs::absolute(".lit") << endl;
+      fs::create_directories(lit::REVISION_DIR);
+      fs::create_directories(lit::PREVIOUS_DIR);
+      cout << "Initialized lit repository at " << fs::absolute(lit::DIR) << endl;
 
       return 0;
     }
