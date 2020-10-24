@@ -3,11 +3,11 @@
 #include <memory>
 
 #include <command.hpp>
-#include <help.hpp>
-#include <init.hpp>
-#include <status.hpp>
-#include <commit.hpp>
-#include <show.hpp>
+#include <commands/help.hpp>
+#include <commands/init.hpp>
+#include <commands/status.hpp>
+#include <commands/commit.hpp>
+#include <commands/show.hpp>
 
 map<string, unique_ptr<Command>> Command::create_map() {
   map<string, unique_ptr<Command>> commands;

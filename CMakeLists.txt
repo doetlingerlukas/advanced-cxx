@@ -7,8 +7,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(lib lib/command.cpp)
-target_include_directories(lib PUBLIC lib)
-
-add_executable(lit src/lit.cpp)
-target_link_libraries(lit PRIVATE lib)
+add_executable(lit)
+target_sources(lit 
+  PRIVATE 
+    src/lit.cpp
+    src/command.cpp
+)
+target_include_directories(lit PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include")
