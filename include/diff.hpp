@@ -9,7 +9,7 @@
 #include <algorithm>
 
 #include <constants.hpp>
-#include <shell.hpp>
+#include <sub-process.hpp>
 
 namespace fs = std::filesystem;
 
@@ -29,7 +29,7 @@ namespace std {
 
         for (auto& p: fs::recursive_directory_iterator(current_path)) {
           if (!(p.is_directory() || contains_lit_path(p))) {
-            auto pair = execute(build_command(fs::relative(p, current_path).string()));
+            auto pair = system_popen(build_command(fs::relative(p, current_path).string()));
             content += pair.second;
             if (pair.first == 1) status.insert(get_status(p));
           }
@@ -39,7 +39,7 @@ namespace std {
         for (auto& p : fs::recursive_directory_iterator(previous)) {
           auto relative = fs::relative(p, previous);
           if (!(p.is_directory() || fs::exists(current_path / relative))) {
-            content += execute(build_command(relative.string())).second;
+            content += system_popen(build_command(relative.string())).second;
             status.insert(make_pair(relative.string(), 'D'));
           }
         }

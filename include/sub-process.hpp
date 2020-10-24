@@ -8,7 +8,7 @@
 #include <string>
 #include <array>
 
-std::pair<int, std::string> execute(const std::string& command) {
+std::pair<int, std::string> system_popen(const std::string& command) {
   std::array<char, 128> buffer;
   std::string result;
 
