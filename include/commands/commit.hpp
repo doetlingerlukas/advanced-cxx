@@ -8,6 +8,8 @@
 #include <constants.hpp>
 #include <command.hpp>
 #include <diff.hpp>
+#include <commit.hpp>
+#include <revision.hpp>
 
 namespace fs = std::filesystem;
 
@@ -29,24 +31,19 @@ class CommitCommand: public Command {
         return 1;
       }
 
-      auto revision = 0;
+      auto revision_count = 0;
       for (auto& d : fs::directory_iterator(lit::REVISION_DIR)) {
-        revision++;
+        revision_count++;
       }
 
-      string revision_dir(string(lit::REVISION_DIR) + "/r" + to_string(revision));
-      fs::create_directories(revision_dir);
+      Revision revision(revision_count);
+      fs::create_directories(revision.directory());
 
       Diff diff;
-      diff.save(revision_dir + "/.patch");
-      
-      auto time = chrono::system_clock::to_time_t(chrono::system_clock::now());
-      ofstream commit_file;
-      commit_file.open(revision_dir + "/r" + to_string(revision) + ".lit");
-      commit_file << "message='" << arguments.at(0) << "'" << endl;
-      commit_file << "time=" << put_time(localtime(&time), "%Y-%m-%d %X") << endl;
-      commit_file << "parent=" << (revision > 0 ? ("r" + to_string(revision)) : "none") << endl;
-      commit_file.close();
+      diff.save(revision.patchpath().string());
+
+      Commit commit(revision, nullopt, nullopt, arguments.at(0));
+      commit.save();
 
       fs::remove_all(fs::current_path() / lit::PREVIOUS_DIR);
       fs::create_directories(lit::PREVIOUS_DIR);

@@ -6,6 +6,8 @@
 
 #include <constants.hpp>
 #include <command.hpp>
+#include <commit.hpp>
+#include <revision.hpp>
 
 namespace fs = std::filesystem;
 
@@ -27,23 +29,19 @@ class ShowCommand: public Command {
         return 1;
       }
 
-      fs::path commit_dir = string(lit::REVISION_DIR) + "/" + arguments.front();
-      if (!fs::exists(commit_dir)) {
+      Revision revision(arguments.front());
+      if (!fs::exists(revision.directory())) {
         cerr << "Unknown commit." << endl;
         return 1;
       }
 
-      {
-        ifstream commit_file(commit_dir.string() + "/" + arguments.front() + ".lit");
-        if (commit_file.is_open()) {
-          cout << commit_file.rdbuf();
-        }
-      }
+      auto commit = Commit::parse(revision.filepath().string());
+      commit.print();
 
       cout << endl;
 
       {
-        ifstream patch_file(commit_dir.string() + "/.patch");
+        ifstream patch_file(revision.patchpath());
         if (patch_file.is_open()) {
           cout << patch_file.rdbuf();
         }
