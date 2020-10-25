@@ -38,10 +38,10 @@ class Commit {
 
       cout << "Parents: ";
       if (this->parent_.has_value()) {
-        cout << this->parent_.value().id();
+        cout << this->parent_.value().to_string();
       }
       if (this->merge_parent_.has_value()) {
-        cout << " " << this->merge_parent_.value().id();
+        cout << " " << this->merge_parent_.value().to_string();
       }
       cout << endl;
 
@@ -92,6 +92,7 @@ class Commit {
       getline(file, str);
       const auto timestamp = chrono::system_clock::from_time_t(stoul(str));
 
+      file.close();
       return Commit(revision, parent, merge_parent, message, timestamp);
     }
 };

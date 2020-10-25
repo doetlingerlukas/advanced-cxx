@@ -10,6 +10,7 @@
 #include <diff.hpp>
 #include <commit.hpp>
 #include <revision.hpp>
+#include <repository.hpp>
 
 namespace fs = std::filesystem;
 
@@ -42,8 +43,10 @@ class CommitCommand: public Command {
       Diff diff;
       diff.save(revision.patchpath().string());
 
-      Commit commit(revision, nullopt, nullopt, arguments.at(0));
+      Commit commit(revision, lit::Repository::get_head(), nullopt, arguments.at(0));
       commit.save();
+
+      lit::Repository::set_head(revision);
 
       fs::remove_all(fs::current_path() / lit::PREVIOUS_DIR);
       fs::create_directories(lit::PREVIOUS_DIR);

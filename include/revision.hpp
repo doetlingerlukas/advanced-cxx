@@ -36,7 +36,7 @@ class Revision {
     }
 
     string to_string() const {
-      return "r" + id_;
+      return "r" + std::to_string(id());
     }
 
     fs::path directory() const {
