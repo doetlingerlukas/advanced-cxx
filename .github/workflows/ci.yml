@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        run: |
+          brew install ninja
+          
+          cmake -G Ninja -B build
+          cmake --build build -v
+        env:
+          CC: gcc-9
+          CXX: g++-9
+
+      - name: Run test
+        run: |
+          export PATH="$PWD/build:$PATH"
+          
+          ./tests/lit-test.sh
