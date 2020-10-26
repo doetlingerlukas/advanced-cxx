@@ -47,16 +47,8 @@ class CommitCommand: public Command {
       commit.save();
 
       lit::Repository::set_head(revision);
-
-      fs::remove_all(fs::current_path() / lit::PREVIOUS_DIR);
-      fs::create_directories(lit::PREVIOUS_DIR);
-      for (auto& p : fs::directory_iterator(fs::current_path())) {
-        if (p.path().filename().string() != ".lit") {
-          const auto copy_options = fs::copy_options::overwrite_existing
-            | fs::copy_options::recursive;
-          fs::copy(p, fs::absolute(lit::PREVIOUS_DIR) / fs::relative(p.path(), fs::current_path()), copy_options);
-        }
-      }
+      lit::Repository::clear_previous_state();
+      lit::Repository::set_previous_state();
 
       return 0;
     }

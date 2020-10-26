@@ -1,10 +1,14 @@
 #pragma once
 
 #include <fstream>
+#include <string>
+#include <filesystem>
+#include <optional>
 
 #include <constants.hpp>
 #include <revision.hpp>
-#include <optional>
+
+namespace fs = std::filesystem;
 
 namespace lit {
 
@@ -32,6 +36,30 @@ class Repository {
 
       head_file << revision.id();
       head_file.close();
+    }
+
+    static void clear_previous_state() {
+      for (auto& p : fs::recursive_directory_iterator(PREVIOUS_DIR)) {
+        fs::remove_all(p);
+      }
+    }
+
+    static void set_previous_state() {
+      for (auto& p : fs::directory_iterator(fs::current_path())) {
+        if (p.path().filename().string() != DIR) {
+          const auto copy_options = fs::copy_options::overwrite_existing
+            | fs::copy_options::recursive;
+          fs::copy(p, fs::absolute(PREVIOUS_DIR) / fs::relative(p.path(), fs::current_path()), copy_options);
+        }
+      }
+    }
+
+    static void discard_changes() {
+      for (auto& p : fs::directory_iterator(fs::current_path())) {
+        if (p.path().filename().string() != DIR) {
+          fs::remove_all(p);
+        }
+      }
     }
 };
 
