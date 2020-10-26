@@ -26,12 +26,18 @@ class CheckoutCommand: public Command {
     }
 
     int execute(vector<string> arguments) const {
-      if (arguments.size() != 1) {
+      if (arguments.size() > 1) {
         cerr << "Invalid amount of arguments supplied." << endl;
         return 1;
       }
 
-      const Revision revision(arguments.front());
+      if (arguments.size() == 0 && !lit::Repository::get_head().has_value()) {
+        lit::Repository::discard_changes();
+        return 0;
+      }
+
+      const auto revision = arguments.size() == 1 ?
+        Revision(arguments.front()) : Revision(lit::Repository::current_index().value());
       if (!fs::exists(revision.directory())) {
         cerr << "Unknown commit." << endl;
         return 1;

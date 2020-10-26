@@ -18,7 +18,7 @@ class Repository {
   public:
     static optional<Revision> get_head() {
       ifstream head_file;
-      head_file.open(string(lit::HEAD));
+      head_file.open(string(HEAD));
 
       string head_revision;
       getline(head_file, head_revision);
@@ -32,10 +32,35 @@ class Repository {
 
     static void set_head(const Revision& revision) {
       ofstream head_file;
-      head_file.open(string(lit::HEAD), ofstream::out | ofstream::trunc);
-
+      head_file.open(string(HEAD), ofstream::out | ofstream::trunc);
       head_file << revision.id();
       head_file.close();
+    }
+
+    static optional<unsigned long long> current_index() {
+      ifstream index_file;
+      index_file.open(INDEX);
+
+      string index;
+      getline(index_file, index);
+      index_file.close();
+
+      if (index.empty()) {
+        return nullopt;
+      }
+      return optional(stoull(index));
+    }
+
+    static unsigned long long update_index() {
+      auto current = Repository::current_index();
+      auto updated = current.has_value() ? current.value() + 1Ui64 : 0Ui64;
+
+      ofstream index_file;
+      index_file.open(string(INDEX), ofstream::out | ofstream::trunc);
+      index_file << updated;
+      index_file.close();
+
+      return updated;
     }
 
     static void clear_previous_state() {

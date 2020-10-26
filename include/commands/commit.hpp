@@ -32,12 +32,7 @@ class CommitCommand: public Command {
         return 1;
       }
 
-      auto revision_count = 0;
-      for (auto& d : fs::directory_iterator(lit::REVISION_DIR)) {
-        revision_count++;
-      }
-
-      Revision revision(revision_count);
+      Revision revision(lit::Repository::update_index());
       fs::create_directories(revision.directory());
 
       Diff diff;
