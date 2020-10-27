@@ -39,7 +39,7 @@ class Repository {
 
     static optional<unsigned long long> current_index() {
       ifstream index_file;
-      index_file.open(INDEX);
+      index_file.open(INDEX.data());
 
       string index;
       getline(index_file, index);
@@ -53,10 +53,10 @@ class Repository {
 
     static unsigned long long update_index() {
       auto current = Repository::current_index();
-      auto updated = current.has_value() ? current.value() + 1Ui64 : 0Ui64;
+      auto updated = current.has_value() ? current.value() + 1ULL : 0ULL;
 
       ofstream index_file;
-      index_file.open(string(INDEX), ofstream::out | ofstream::trunc);
+      index_file.open(INDEX.data(), ofstream::out | ofstream::trunc);
       index_file << updated;
       index_file.close();
 

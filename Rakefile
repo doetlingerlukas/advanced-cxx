@@ -2,7 +2,7 @@
 
 task :build do
   sh 'cmake', '-G', 'Ninja', '-B', 'build'
-  sh 'cmake', '--build', 'build'
+  sh 'cmake', '--build', 'build', '-v'
 end
 
 task :clean do
