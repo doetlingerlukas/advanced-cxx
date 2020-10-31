@@ -43,7 +43,7 @@ echo "== Displaying graph"
 # o ← r2 Extend file1 even further
 # o   r1 Extend file1
 # o   r0 Add file1
-lit log
+#lit log
 
 echo "== Inspecting r0"
 lit show r0
