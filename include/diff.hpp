@@ -58,6 +58,20 @@ namespace std {
         }
       }
 
+      bool status_contains(const string& key) const {
+        auto search = this->status.find(key);
+        return (search == this->status.end()) ? false : true;
+      }
+
+      bool conflicts_with(const Diff& diff_) const {
+        for (auto& s : this->status) {
+          if (diff_.status_contains(s.first)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
     private:
       static string build_command(const string& file) {
         return "diff -uN " + string(lit::PREVIOUS_DIR) + "/" + file + " " + file;
