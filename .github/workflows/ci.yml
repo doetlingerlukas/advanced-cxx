@@ -27,4 +27,4 @@ jobs:
         run: |
           export PATH="$PWD/build:$PATH"
           
-          bash -x ./tests/lit-test.sh
+          bash -x ./tests/test.sh
