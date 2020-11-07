@@ -9,6 +9,7 @@
 #include <commands/commit.hpp>
 #include <commands/show.hpp>
 #include <commands/checkout.hpp>
+#include <commands/merge.hpp>
 
 map<string, unique_ptr<Command>> Command::create_map() {
   map<string, unique_ptr<Command>> commands;
@@ -19,6 +20,7 @@ map<string, unique_ptr<Command>> Command::create_map() {
   commands.insert(make_pair("commit", unique_ptr<Command>(new CommitCommand())));
   commands.insert(make_pair("show", unique_ptr<Command>(new ShowCommand())));
   commands.insert(make_pair("checkout", unique_ptr<Command>(new CheckoutCommand())));
+  commands.insert(make_pair("merge", unique_ptr<Command>(new MergeCommand())));
 
   return commands;
 }

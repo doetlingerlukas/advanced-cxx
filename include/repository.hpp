@@ -83,6 +83,8 @@ class Repository {
     }
 
     static void clear() {
+      Repository::clear_previous_dir();
+
       for (auto& p : fs::directory_iterator(fs::current_path())) {
         if (p.path().filename().string() != DIR) {
           fs::remove_all(p);

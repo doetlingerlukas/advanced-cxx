@@ -42,7 +42,8 @@ class Commit {
         parents_.push_front(p.value());
         p = Commit::parse(p.value().filepath().string()).parent();
       }
-      
+
+      parents_.push_back(this->revision_);      
       return parents_;
     }
 

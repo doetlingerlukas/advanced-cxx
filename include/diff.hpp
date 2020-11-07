@@ -24,12 +24,10 @@ namespace std {
       string content;
       map<string, char> status;
 
-      Diff() {
-        const auto current_path = fs::current_path();
-
-        for (auto& p: fs::recursive_directory_iterator(current_path)) {
-          if (!(p.is_directory() || contains_lit_path(p))) {
-            auto pair = system_popen(build_command(fs::relative(p, current_path).string()));
+      Diff(fs::path directory, bool merge_dir) {
+        for (auto& p: fs::recursive_directory_iterator(directory)) {
+          if (!(p.is_directory() || contains_lit_path(p)) || merge_dir) {
+            auto pair = system_popen(build_command(directory, p));
             content += pair.second;
             if (pair.first == 1) status.insert(get_status(p));
           }
@@ -38,12 +36,14 @@ namespace std {
         auto previous = fs::absolute(lit::PREVIOUS_DIR);
         for (auto& p : fs::recursive_directory_iterator(previous)) {
           auto relative = fs::relative(p, previous);
-          if (!(p.is_directory() || fs::exists(current_path / relative))) {
-            content += system_popen(build_command(relative.string())).second;
+          if (!(p.is_directory() || fs::exists(directory / relative)) || merge_dir) {
+            content += system_popen(build_command(directory, directory / relative)).second;
             status.insert(make_pair(relative.string(), 'D'));
           }
         }
       }
+
+      Diff() : Diff(fs::current_path(), false) {}
 
       void save(const string& filepath) const {
         ofstream file;
@@ -73,8 +73,8 @@ namespace std {
       }
 
     private:
-      static string build_command(const string& file) {
-        return "diff -uN " + string(lit::PREVIOUS_DIR) + "/" + file + " " + file;
+      static string build_command(const fs::path& wd, const fs::path& file) {
+        return "diff -uN " + string(lit::PREVIOUS_DIR) + "/" + fs::relative(file, wd).string() + " " + file.string();
       }
 
       static pair<string, char> get_status(const fs::directory_entry& p) {

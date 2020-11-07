@@ -54,4 +54,8 @@ class Revision {
     static Revision from_id(const string id_string) {
       return Revision(stoull(id_string, nullptr, 10));
     }
+
+    bool operator==(const Revision& r) {
+      return this->id_ == r.id_;
+    }
 };
