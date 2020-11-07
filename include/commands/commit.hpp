@@ -42,8 +42,7 @@ class CommitCommand: public Command {
       commit.save();
 
       lit::Repository::set_head(revision);
-      lit::Repository::clear_previous_state();
-      lit::Repository::set_previous_state();
+      lit::Repository::set_previous_dir();
 
       return 0;
     }

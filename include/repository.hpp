@@ -7,6 +7,7 @@
 
 #include <constants.hpp>
 #include <revision.hpp>
+#include <commit.hpp>
 
 namespace fs = std::filesystem;
 
@@ -63,13 +64,15 @@ class Repository {
       return updated;
     }
 
-    static void clear_previous_state() {
+    static void clear_previous_dir() {
       for (auto& p : fs::recursive_directory_iterator(PREVIOUS_DIR)) {
         fs::remove_all(p);
       }
     }
 
-    static void set_previous_state() {
+    static void set_previous_dir() {
+      Repository::clear_previous_dir();
+      
       for (auto& p : fs::directory_iterator(fs::current_path())) {
         if (p.path().filename().string() != DIR) {
           const auto copy_options = fs::copy_options::overwrite_existing
@@ -79,7 +82,7 @@ class Repository {
       }
     }
 
-    static void discard_changes() {
+    static void clear() {
       for (auto& p : fs::directory_iterator(fs::current_path())) {
         if (p.path().filename().string() != DIR) {
           fs::remove_all(p);

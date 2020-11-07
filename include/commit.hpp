@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+#include <deque>
 
 #include <revision.hpp>
 
@@ -31,6 +32,18 @@ class Commit {
 
     optional<Revision> parent() const {
       return this->parent_;
+    }
+
+    deque<Revision> parents() const {
+      deque<Revision> parents_;
+      auto p = this->parent_;
+
+      while (p.has_value()) {
+        parents_.push_front(p.value());
+        p = Commit::parse(p.value().filepath().string()).parent();
+      }
+      
+      return parents_;
     }
 
     void print() const {

@@ -32,7 +32,7 @@ class CheckoutCommand: public Command {
       }
 
       if (arguments.size() == 0 && !lit::Repository::get_head().has_value()) {
-        lit::Repository::discard_changes();
+        lit::Repository::clear();
         return 0;
       }
 
@@ -44,19 +44,13 @@ class CheckoutCommand: public Command {
       }
 
       Commit commit = Commit::parse(revision.filepath().string());
-      deque<Revision> parents;
+      auto parents = commit.parents();
 
-      while (commit.parent().has_value()) {
-        parents.push_front(commit.parent().value());
-        commit = Commit::parse(commit.parent().value().filepath().string());
-      }
-
-      lit::Repository::discard_changes();
-      lit::Repository::clear_previous_state();
+      lit::Repository::clear();
       for (auto& r : parents) {
         Patch::apply(r.patchpath());
       }
-      lit::Repository::set_previous_state();
+      lit::Repository::set_previous_dir();
       lit::Repository::set_head(revision);
 
       cout << "Checkout successful!" << endl;
