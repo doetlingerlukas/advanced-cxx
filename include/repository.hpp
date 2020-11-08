@@ -8,6 +8,7 @@
 #include <constants.hpp>
 #include <revision.hpp>
 #include <commit.hpp>
+#include <patch.hpp>
 
 namespace fs = std::filesystem;
 
@@ -90,6 +91,18 @@ class Repository {
           fs::remove_all(p);
         }
       }
+    }
+
+    static void checkout(const Revision& revision) {
+      Commit commit = Commit::parse(revision.filepath().string());
+      auto revisions = commit.revision_history();
+
+      Repository::clear();
+      for (auto& r : revisions) {
+        Patch::apply(r.patchpath());
+      }
+      Repository::set_previous_dir();
+      Repository::set_head(revision);
     }
 };
 

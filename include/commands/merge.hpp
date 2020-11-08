@@ -39,8 +39,8 @@ class MergeCommand: public Command {
 
       Commit source = Commit::parse(source_rev.filepath().string());
       Commit target = Commit::parse(target_rev.filepath().string());
-      auto source_parents = source.parents();
-      auto target_parents = target.parents();
+      auto source_parents = source.revision_history();
+      auto target_parents = target.revision_history();
       fs::create_directory(fs::absolute(lit::MERGE_SOURCE));
       fs::create_directory(fs::absolute(lit::MERGE_TARGET));
 
@@ -60,15 +60,7 @@ class MergeCommand: public Command {
           }
         } catch (std::out_of_range const& exc) {}
       }
-      Commit base = Commit::parse(base_rev.filepath().string());
-      auto parents = base.parents();
-
-      lit::Repository::clear();
-      for (auto& r : parents) {
-        Patch::apply(r.patchpath());
-      }
-      lit::Repository::set_previous_dir();
-
+      lit::Repository::checkout(base_rev);
 
       Diff source_diff(fs::absolute(lit::MERGE_SOURCE), true);
       source_diff.print_status();

@@ -43,15 +43,7 @@ class CheckoutCommand: public Command {
         return 1;
       }
 
-      Commit commit = Commit::parse(revision.filepath().string());
-      auto parents = commit.parents();
-
-      lit::Repository::clear();
-      for (auto& r : parents) {
-        Patch::apply(r.patchpath());
-      }
-      lit::Repository::set_previous_dir();
-      lit::Repository::set_head(revision);
+      lit::Repository::checkout(revision);
 
       cout << "Checkout successful!" << endl;
       cout << "HEAD is now at " << revision.to_string() << endl;

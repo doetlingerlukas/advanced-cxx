@@ -34,7 +34,7 @@ class Commit {
       return this->parent_;
     }
 
-    deque<Revision> parents() const {
+    deque<Revision> revision_history() const {
       deque<Revision> parents_;
       auto p = this->parent_;
 
