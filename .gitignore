@@ -6,3 +6,4 @@ build/
 
 # tests
 test/
+lit-test*/

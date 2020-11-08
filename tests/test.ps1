@@ -1,20 +1,17 @@
-#!/bin/bash
+$TEST_DIR = $PSScriptRoot + "\..\lit-test"
+New-Item -Path ".\lit-test" -ItemType Directory
 
-set -euo pipefail
+Set-Location ".\lit-test"
 
-readonly TEST_DIR=$(mktemp --tmpdir --directory lit-test.XXXXXX)
-
-echo "== Using $TEST_DIR"
-pushd "$TEST_DIR"
-
-echo "== Initializing repository"
+Write-Output "== Initializing repository"
 lit init
 
-echo "== Creating the first commit"
-cat >file1 <<-EOF
-  This is the first line of the first file. 🚀
-  This is the second line of the first file.
-EOF
+Write-Output "== Creating the first commit"
+$content = @'
+This is the first line of the first file. 🚀
+This is the second line of the first file.
+'@
+$content | Out-File ".\file1"
 
 # Let's check the status. Should look something like this:
 # Changes:
@@ -24,8 +21,8 @@ lit status
 # We expect the first commit to be identified as r0.
 lit commit "Add file1"
 
-echo "== Creating more commits"
-echo >>file1 "A third line is added to the first file."
+Write-Output "== Creating more commits"
+"A third line is added to the first file." | Out-File ".\file1" -Append
 
 # Let's check the status again, just to be sure.
 lit status
@@ -33,60 +30,63 @@ lit status
 # This one would be r1.
 lit commit "Extend file1"
 
-echo >>file1 "A forth line is added."
+"A forth line is added." | Out-File ".\file1" -Append
 
 # This should be r2.
 lit commit "Extend file1 even further"
 
-echo "== Displaying graph"
+Write-Output "== Displaying graph"
 
 # o ← r2 Extend file1 even further
 # o   r1 Extend file1
 # o   r0 Add file1
 #lit log
 
-echo "== Inspecting r0"
+Write-Output "== Inspecting r0"
 lit show r0
 
-echo "== Switching to r0"
+Write-Output "== Switching to r0"
 lit checkout r0
 
 # Checking the file content.
-diff -s file1 - <<-EOF
-  This is the first line of the first file. 🚀
-  This is the second line of the first file.
-EOF
+@'
+This is the first line of the first file. 🚀
+This is the second line of the first file.
+'@ | diff.exe -s file1 -
 
-echo "== Switching back to r2"
+Write-Output "== Switching back to r2"
 lit checkout r2
 
 # Checking the file content again.
-diff -s file1 - <<-EOF
-  This is the first line of the first file. 🚀
-  This is the second line of the first file.
-  A third line is added to the first file.
-  A forth line is added.
-EOF
+@'
+This is the first line of the first file. 🚀
+This is the second line of the first file.
+A third line is added to the first file.
+A forth line is added.
+'@ | diff.exe -s file1 -
 
-echo "== Adding and discarding changes"
-echo >>file1 "This fifth line should be gone in an instant."
+Write-Output "== Adding and discarding changes"
+"This fifth line should be gone in an instant." | Out-File ".\file1" -Append
 lit checkout
 
 # Let's confirm.
-diff -s file1 - <<-EOF
-  This is the first line of the first file. 🚀
-  This is the second line of the first file.
-  A third line is added to the first file.
-  A forth line is added.
-EOF
+@'
+This is the first line of the first file. 🚀
+This is the second line of the first file.
+A third line is added to the first file.
+A forth line is added.
+'@ | diff.exe -s file1 -
 
-echo "== Creating another branch"
+Write-Output "== Creating another branch"
 lit checkout r0
-mkdir subfolder
-cat >subfolder/file2 <<-EOF
-  This is the first line of the second file.
-  And another line in the second file.
-EOF
+
+New-Item -Path ".\subfolder" -ItemType Directory
+
+$content = @'
+This is the first line of the second file.
+And another line in the second file.
+'@
+$content | Out-File ".\subfolder\file2"
 
 # This should be r3.
 lit commit "Add file2"
@@ -97,11 +97,13 @@ lit commit "Add file2"
 # o─┘   r0 Add file1
 #lit log
 
-echo "== Going back"
+Write-Output "== Going back"
 lit checkout r2
 
 # file2 should be gone.
-test ! -f subfolder/file2
+if (Test-Path ".\subfolder\file2" -PathType Leaf) {
+  trow "Error: file2 should not exist!"
+}
 
 #echo "== Merging (no conflict)"
 #
@@ -194,6 +196,6 @@ test ! -f subfolder/file2
 ## o─┘   r0 Add file1
 #lit log
 
-echo "== Cleanup"
-popd
-rm -r "$TEST_DIR"
+Write-Output "== Cleanup"
+Set-Location ..
+Remove-Item -Force $TEST_DIR
