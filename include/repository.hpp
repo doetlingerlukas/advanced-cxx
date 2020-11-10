@@ -66,7 +66,7 @@ class Repository {
     }
 
     static void clear_previous_dir() {
-      for (auto& p : fs::recursive_directory_iterator(PREVIOUS_DIR)) {
+      for (auto& p : fs::directory_iterator(PREVIOUS_DIR)) {
         fs::remove_all(p);
       }
     }
