@@ -37,10 +37,13 @@ jobs:
 
       - name: Build
         run: |
-          choco install ninja
+          iwr -useb get.scoop.sh | iex
+          scoop install ninja
+          scoop install gcc
 
           cmake -G Ninja -B build
           cmake --build build -v
+        shell: powershell
         
       - name: Run test
         run: .\tests\test.ps1

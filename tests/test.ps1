@@ -104,7 +104,7 @@ lit checkout r2
 
 # file2 should be gone.
 if (Test-Path ".\subfolder\file2" -PathType Leaf) {
-  trow "Error: file2 should not exist!"
+  throw "Error: file2 should not exist!"
 }
 
 #echo "== Merging (no conflict)"
