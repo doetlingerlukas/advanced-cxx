@@ -51,11 +51,15 @@ class Revision {
       return this->directory() / ".patch";
     }
 
+    bool exists() const {
+      return fs::exists(directory());
+    }
+
     static Revision from_id(const string id_string) {
       return Revision(stoull(id_string, nullptr, 10));
     }
 
-    bool operator==(const Revision& r) {
+    bool operator==(const Revision& r) const {
       return this->id_ == r.id_;
     }
 };
