@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  unix:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,3 +28,20 @@ jobs:
           export PATH="$PWD/build:$PATH"
           
           bash -x ./tests/test.sh
+  
+  windows:
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        run: |
+          choco install ninja
+
+          cmake -G Ninja -B build
+          cmake --build build -v
+        
+      - name: Run test
+        run: .\tests\test.ps1
+        shell: powershell

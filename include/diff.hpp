@@ -74,7 +74,7 @@ namespace std {
 
     private:
       static string build_command(const fs::path& wd, const fs::path& file) {
-        return "diff -uN " + string(lit::PREVIOUS_DIR) + "/" + fs::relative(file, wd).string() + " " + file.string();
+        return "diff -uN " + string(lit::PREVIOUS_DIR) + "/" + fs::relative(file, wd).string() + " " + fs::relative(file, wd).string();
       }
 
       static pair<string, char> get_status(const fs::directory_entry& p) {

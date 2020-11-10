@@ -1,7 +1,9 @@
-$TEST_DIR = $PSScriptRoot + "\..\lit-test"
-New-Item -Path ".\lit-test" -ItemType Directory
+$env:Path += (";" + $PSScriptRoot + "\..\build")
 
-Set-Location ".\lit-test"
+$TEST_DIR = $PSScriptRoot + "\..\lit-test"
+New-Item -Path $TEST_DIR -ItemType Directory
+
+Set-Location $TEST_DIR
 
 Write-Output "== Initializing repository"
 lit init
@@ -11,7 +13,7 @@ $content = @'
 This is the first line of the first file. 🚀
 This is the second line of the first file.
 '@
-$content | Out-File ".\file1"
+$content | Out-File ".\file1" -Append
 
 # Let's check the status. Should look something like this:
 # Changes:
@@ -52,7 +54,7 @@ lit checkout r0
 @'
 This is the first line of the first file. 🚀
 This is the second line of the first file.
-'@ | diff.exe -s file1 -
+'@ | diff.exe -s "${TEST_DIR}\file1" -
 
 Write-Output "== Switching back to r2"
 lit checkout r2
@@ -63,7 +65,7 @@ This is the first line of the first file. 🚀
 This is the second line of the first file.
 A third line is added to the first file.
 A forth line is added.
-'@ | diff.exe -s file1 -
+'@ | diff.exe -s "${TEST_DIR}\file1" -
 
 Write-Output "== Adding and discarding changes"
 "This fifth line should be gone in an instant." | Out-File ".\file1" -Append
@@ -75,7 +77,7 @@ This is the first line of the first file. 🚀
 This is the second line of the first file.
 A third line is added to the first file.
 A forth line is added.
-'@ | diff.exe -s file1 -
+'@ | diff.exe -s "${TEST_DIR}\file1" -
 
 Write-Output "== Creating another branch"
 lit checkout r0
@@ -198,4 +200,4 @@ if (Test-Path ".\subfolder\file2" -PathType Leaf) {
 
 Write-Output "== Cleanup"
 Set-Location ..
-Remove-Item -Force $TEST_DIR
+Remove-Item -Recurse -Force $TEST_DIR
