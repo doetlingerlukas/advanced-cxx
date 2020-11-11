@@ -25,13 +25,17 @@ class Commit {
       revision_(revision), parent_(parent), merge_parent_(merge_parent), message_(message), timestamp_(timestamp) {}
 
     Commit(Revision revision, optional<Revision> parent, optional<Revision> merge_parent, const string& message) :
-      Commit(revision, parent, nullopt, message, chrono::system_clock::now()) {}
+      Commit(revision, parent, merge_parent, message, chrono::system_clock::now()) {}
 
     Commit(Revision revision, optional<Revision> parent, const string& message) :
       Commit(revision, parent, nullopt, message) {}
 
     optional<Revision> parent() const {
       return this->parent_;
+    }
+
+    optional<Revision> merge_parent() const {
+      return this->merge_parent_;
     }
 
     deque<Revision> revision_history() const {

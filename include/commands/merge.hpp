@@ -55,8 +55,14 @@ class MergeCommand: public Command {
       // TODO: refactor
       Revision base_rev = head_revisions.at(0);
       for (auto i = 0; i < head_revisions.size(); i++) {
+        auto commit = Commit::parse(head_revisions.at(i).filepath().string());
         try {
-          if (source_revisions.at(i) == head_revisions.at(i)) {
+          if (commit.merge_parent().has_value()) {
+            cout << "Found merge parent!" << endl;
+            if (std::find(source_revisions.begin(), source_revisions.end(), commit.merge_parent().value()) != source_revisions.end()) {
+              base_rev = commit.merge_parent().value();
+            }
+          } else if (source_revisions.at(i) == head_revisions.at(i)) {
             base_rev = head_revisions.at(i);
           }
         } catch (std::out_of_range const& exc) {}
@@ -64,28 +70,77 @@ class MergeCommand: public Command {
       lit::Repository::checkout(base_rev);
       cout << "Base for both branches is: " << base_rev.to_string() << endl;
 
+      cout << "----------------------" << endl;
       const Diff source_diff(fs::absolute(lit::MERGE_SOURCE), true);
+      source_diff.print_status();
+      cout << "----------------------" << endl;
       const Diff head_diff(fs::absolute(lit::MERGE_TARGET), true);
+      head_diff.print_status();
+      cout << "----------------------" << endl;
+
 
       if (head_diff.conflicts_with(source_diff)) {
-        cerr << "Merge conflict." << endl;
-        return 1;
+        const auto conflicts = head_diff.conflicts(source_diff);
+        
+        cout << "Merge conflict(s) detected." << endl;
+
+        // Copy conflicts files
+        const auto copy_option = fs::copy_options::overwrite_existing;
+        for (auto& c : conflicts) {
+          cout << "\t - " << c.first << endl;
+          const auto target_file = fs::current_path() / fs::path(c.first + "." + source.to_string());
+          fs::create_directory(target_file.parent_path());
+          fs::copy(fs::absolute(lit::MERGE_SOURCE) / fs::path(c.first), target_file, copy_option);
+
+          fs::rename(fs::current_path() / fs::path(c.first), fs::current_path() / fs::path(c.first + "." + base_rev.to_string()));
+        }
+
+        for (auto& f : head_diff.status) {
+          const auto target_file = fs::current_path() / fs::path(f.first);
+          fs::create_directory(target_file.parent_path());
+          fs::copy(fs::absolute(lit::MERGE_TARGET) / fs::path(f.first), target_file, copy_option);
+        }
+
+        for (auto& f : source_diff.status) {
+          if (!head_diff.status_contains(f.first)) {
+            const auto target_file = fs::current_path() / fs::path(f.first);
+            fs::create_directory(target_file.parent_path());
+            fs::copy(fs::absolute(lit::MERGE_SOURCE) / fs::path(f.first), target_file, copy_option);
+          }
+        }
+
+        lit::Repository::set_head(head);
       } else {
         cout << "Merging " << source.to_string() << " into " << head.to_string() << '.' << endl;
 
         lit::Repository::checkout(head);
 
+        const auto copy_option = fs::copy_options::overwrite_existing;
         for (auto& f : source_diff.status) {
-          const auto copy_option = fs::copy_options::overwrite_existing;
-          const auto target_file = fs::current_path() / fs::relative(f.first, lit::MERGE_SOURCE);
+          const auto target_file = fs::current_path() / fs::path(f.first);
           fs::create_directory(target_file.parent_path());
-          fs::copy(fs::absolute(f.first), target_file, copy_option);
+          fs::copy(fs::absolute(lit::MERGE_SOURCE) / fs::path(f.first), target_file, copy_option);
         }
 
         cout << "Succesfully merged changes from " << source.to_string() << '.' << endl;
-        cout << "Please commit changes now." << endl;
+        
+        Revision revision(lit::Repository::update_index());
+        fs::create_directories(revision.directory());
 
-        return 0;
+        Diff diff;
+        diff.save(revision.patchpath().string());
+
+        Commit commit(revision, optional<Revision>(head), optional<Revision>(source), ("Merge " + source.to_string() + " into " + head.to_string() + '.'));
+        commit.save();
+        cout << "Merge Parent: " << commit.merge_parent().value_or(Revision(100)).to_string() << " should be " << source.to_string() << endl;
+
+        lit::Repository::set_head(revision);
+        lit::Repository::set_previous_dir();
       }
+
+      fs::remove_all(fs::absolute(lit::MERGE_SOURCE));
+      fs::remove_all(fs::absolute(lit::MERGE_TARGET));
+
+      return 0;
     }
 };

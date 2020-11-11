@@ -114,84 +114,84 @@ diff -s subfolder/file2 - <<-EOF
 	And another line in the second file.
 EOF
 
-## o←┐  ← r4 Merge r3 into r2
-## │ └o   r3 Add file2
-## o  │   r2 Extend file1 even further
-## o  │   r1 Extend file1
-## o──┘   r0 Add file1
+# o←┐  ← r4 Merge r3 into r2
+# │ └o   r3 Add file2
+# o  │   r2 Extend file1 even further
+# o  │   r1 Extend file1
+# o──┘   r0 Add file1
 #lit log
 
-#echo "== Setting up a conflict"
-#echo >>file1 "Fifth line on top of r4."
-#lit commit "Extend file1 one way" # r5
-#
-#lit checkout r3
-#echo >>file1 "Third line on top of r3."
-#lit commit "Extend file1 another way" # r6
-#
-##    o ← r6 Extend file1 another way
-## o  │   r5 Extend file1 one way
-## o←┐│   r4 Merge r3 into r2
-## │ └o   r3 Add file2
-## o  │    r2 Extend file1 even further
-## o  │    r1 Extend file1
-## o──┘    r0 Add file1
+echo "== Setting up a conflict"
+echo >>file1 "Fifth line on top of r4."
+lit commit "Extend file1 one way" # r5
+
+lit checkout r3
+echo >>file1 "Third line on top of r3."
+lit commit "Extend file1 another way" # r6
+
+#    o ← r6 Extend file1 another way
+# o  │   r5 Extend file1 one way
+# o←┐│   r4 Merge r3 into r2
+# │ └o   r3 Add file2
+# o  │    r2 Extend file1 even further
+# o  │    r1 Extend file1
+# o──┘    r0 Add file1
 #lit log
-#
-## Going back and merging.
-#lit checkout r5
-#lit merge r6 || true
-#
-## Let's check all file versions:
-##   Current commit
-#diff -s file1 - <<-EOF
-#	This is the first line of the first file. 🚀
-#	This is the second line of the first file.
-#	A third line is added to the first file.
-#	A forth line is added.
-#	Fifth line on top of r4.
-#EOF
-#
-##   other branch
-#diff -s file1.r6 - <<-EOF
-#	This is the first line of the first file. 🚀
-#	This is the second line of the first file.
-#	Third line on top of r3.
-#EOF
-#
-##  common base
-#diff -s file1.r3 - <<-EOF
-#	This is the first line of the first file. 🚀
-#	This is the second line of the first file.
-#EOF
-#
-## Let's simulate some conflict resolution.
-#echo >>file1 "Sixth line added during merge conflict."
-#
-## Before continuing we need to cleanup the leftover files.
-#rm file1.r6 file1.r3
-#
-#lit commit "Merge r6 into r5" # r7
-#
-## Let's verify the final result.
-#
-#diff -s file1 - <<-EOF
-#	This is the first line of the first file. 🚀
-#	This is the second line of the first file.
-#	A third line is added to the first file.
-#	A forth line is added.
-#	Fifth line on top of r4.
-#	Sixth line added during merge conflict.
-#EOF
-#
-## o←┐   ← r7 Merge r6 into r5
-## │ └─o   r6 Extend file1 another way
-## o   │   r5 Extend file1 one way
-## o←┐ │   r4 Merge r3 into r2
-## │ └─o   r3 Add file2
-## o   │   r2 Extend file1 even further
-## o   │   r1 Extend file1
-## o───┘   r0 Add file1
+
+# Going back and merging.
+lit checkout r5
+lit merge r6 || true
+
+# Let's check all file versions:
+#   Current commit
+diff -s file1 - <<-EOF
+	This is the first line of the first file. 🚀
+	This is the second line of the first file.
+	A third line is added to the first file.
+	A forth line is added.
+	Fifth line on top of r4.
+EOF
+
+#   other branch
+diff -s file1.r6 - <<-EOF
+	This is the first line of the first file. 🚀
+	This is the second line of the first file.
+	Third line on top of r3.
+EOF
+
+#  common base
+diff -s file1.r3 - <<-EOF
+	This is the first line of the first file. 🚀
+	This is the second line of the first file.
+EOF
+
+# Let's simulate some conflict resolution.
+echo >>file1 "Sixth line added during merge conflict."
+
+# Before continuing we need to cleanup the leftover files.
+rm file1.r6 file1.r3
+
+lit commit "Merge r6 into r5" # r7
+
+# Let's verify the final result.
+
+diff -s file1 - <<-EOF
+	This is the first line of the first file. 🚀
+	This is the second line of the first file.
+	A third line is added to the first file.
+	A forth line is added.
+	Fifth line on top of r4.
+	Sixth line added during merge conflict.
+EOF
+
+# o←┐   ← r7 Merge r6 into r5
+# │ └─o   r6 Extend file1 another way
+# o   │   r5 Extend file1 one way
+# o←┐ │   r4 Merge r3 into r2
+# │ └─o   r3 Add file2
+# o   │   r2 Extend file1 even further
+# o   │   r1 Extend file1
+# o───┘   r0 Add file1
 #lit log
 
 echo "== Cleanup"

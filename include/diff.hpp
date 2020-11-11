@@ -29,7 +29,7 @@ namespace std {
           if (!(p.is_directory() || contains_lit_path(p)) || (!p.is_directory() && merge_dir)) {
             auto pair = system_popen(build_command(directory, p));
             content += pair.second;
-            if (pair.first != 0) status.insert(get_status(p));
+            if (pair.first != 0) status.insert(get_status(p, directory));
           }
         }
 
@@ -63,13 +63,18 @@ namespace std {
         return (search == this->status.end()) ? false : true;
       }
 
-      bool conflicts_with(const Diff& diff_) const {
+      map<string, char> conflicts(const Diff& diff_) const {
+        map<string, char> conflicts_;
         for (auto& s : this->status) {
           if (diff_.status_contains(s.first)) {
-            return true;
+            conflicts_.insert(s);
           }
         }
-        return false;
+        return conflicts_;
+      }
+
+      bool conflicts_with(const Diff& diff_) const {
+        return !conflicts(diff_).empty();
       }
 
     private:
@@ -77,8 +82,8 @@ namespace std {
         return "diff -uN " + string(lit::PREVIOUS_DIR) + "/" + fs::relative(file, wd).string() + " " + fs::relative(file, fs::current_path()).string();
       }
 
-      static pair<string, char> get_status(const fs::directory_entry& p) {
-        auto relative = fs::relative(p, fs::current_path());
+      static pair<string, char> get_status(const fs::directory_entry& p, const fs::path& wd) {
+        auto relative = fs::relative(p, wd);
         auto previous = lit::PREVIOUS_DIR / relative;
         if (fs::exists(previous)) {
           return make_pair(relative.string(), 'M');
