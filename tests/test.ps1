@@ -107,24 +107,24 @@ if (Test-Path ".\subfolder\file2" -PathType Leaf) {
   throw "Error: file2 should not exist!"
 }
 
-#echo "== Merging (no conflict)"
-#
-## This creates a merge commit r4.
-#lit merge r3
-#
-## file2 should now be present.
-#diff -s subfolder/file2 - <<-EOF
-#  This is the first line of the second file.
-#  And another line in the second file.
-#EOF
-#
-## o─┐ ← r4 Merge r3 into r2
-## │ o   r3 Add file2
-## o │   r2 Extend file1 even further
-## o │   r1 Extend file1
-## o─┘   r0 Add file1
+Write-Output "== Merging (no conflict)"
+
+# This creates a merge commit r4.
+lit merge r3
+
+# file2 should now be present.
+@'
+This is the first line of the second file.
+And another line in the second file.
+'@ | diff.exe -s "${TEST_DIR}\subfolder\file2" -
+
+# o─┐ ← r4 Merge r3 into r2
+# │ o   r3 Add file2
+# o │   r2 Extend file1 even further
+# o │   r1 Extend file1
+# o─┘   r0 Add file1
 #lit log
-#
+
 #echo "== Setting up a conflict"
 #echo >>file1 "Fifth line on top of r4."
 #lit commit "Extend file1 one way" # r5

@@ -40,7 +40,7 @@ class MergeCommand: public Command {
 
       const auto source_commit = Commit::parse(source.filepath().string());
       const auto head_commit = Commit::parse(head.filepath().string());
-      auto source_revisions = source_commit.revision_history();
+      const auto source_revisions = source_commit.revision_history();
       const auto head_revisions = head_commit.revision_history();
       fs::create_directory(fs::absolute(lit::MERGE_SOURCE));
       fs::create_directory(fs::absolute(lit::MERGE_TARGET));
@@ -67,27 +67,25 @@ class MergeCommand: public Command {
       const Diff source_diff(fs::absolute(lit::MERGE_SOURCE), true);
       const Diff head_diff(fs::absolute(lit::MERGE_TARGET), true);
 
-      if (false) {
+      if (head_diff.conflicts_with(source_diff)) {
         cerr << "Merge conflict." << endl;
         return 1;
+      } else {
+        cout << "Merging " << source.to_string() << " into " << head.to_string() << '.' << endl;
+
+        lit::Repository::checkout(head);
+
+        for (auto& f : source_diff.status) {
+          const auto copy_option = fs::copy_options::overwrite_existing;
+          const auto target_file = fs::current_path() / fs::relative(f.first, lit::MERGE_SOURCE);
+          fs::create_directory(target_file.parent_path());
+          fs::copy(fs::absolute(f.first), target_file, copy_option);
+        }
+
+        cout << "Succesfully merged changes from " << source.to_string() << '.' << endl;
+        cout << "Please commit changes now." << endl;
+
+        return 0;
       }
-
-
-      cout << "Merging " << source.to_string() << " into " << head.to_string() << '.' << endl;
-
-      lit::Repository::checkout(head);
-
-      const auto base_revisions = Commit::parse(base_rev.filepath().string()).revision_history();
-      for (auto& r : base_revisions) {
-        source_revisions.pop_front();
-      }
-      for (auto& r : source_revisions) {
-        Patch::apply(r.patchpath());
-      }
-
-      cout << "Succesfully merged changes from " << source.to_string() << '.' << endl;
-      cout << "Please commit changes now." << endl;
-
-      return 0;
     }
 };

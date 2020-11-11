@@ -26,7 +26,7 @@ namespace std {
 
       Diff(fs::path directory, bool merge_dir) {
         for (auto& p: fs::recursive_directory_iterator(directory)) {
-          if (!(p.is_directory() || contains_lit_path(p)) || merge_dir) {
+          if (!(p.is_directory() || contains_lit_path(p)) || (!p.is_directory() && merge_dir)) {
             auto pair = system_popen(build_command(directory, p));
             content += pair.second;
             if (pair.first == 1) status.insert(get_status(p));
@@ -36,7 +36,7 @@ namespace std {
         auto previous = fs::absolute(lit::PREVIOUS_DIR);
         for (auto& p : fs::recursive_directory_iterator(previous)) {
           auto relative = fs::relative(p, previous);
-          if (!(p.is_directory() || fs::exists(directory / relative)) || merge_dir) {
+          if (!(p.is_directory() || fs::exists(directory / relative))) {
             content += system_popen(build_command(directory, directory / relative)).second;
             status.insert(make_pair(relative.string(), 'D'));
           }
