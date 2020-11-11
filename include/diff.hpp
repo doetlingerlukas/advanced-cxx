@@ -29,7 +29,7 @@ namespace std {
           if (!(p.is_directory() || contains_lit_path(p)) || (!p.is_directory() && merge_dir)) {
             auto pair = system_popen(build_command(directory, p));
             content += pair.second;
-            if (pair.first == 1) status.insert(get_status(p));
+            if (pair.first != 0) status.insert(get_status(p));
           }
         }
 
