@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <chrono>
+#include <ctime>
 
 #include <constants.hpp>
 #include <command.hpp>
@@ -43,6 +44,10 @@ class CommitCommand: public Command {
 
       lit::Repository::set_head(revision);
       lit::Repository::set_previous_dir();
+
+      cout << "Commit: " << revision.to_string() << endl;
+      auto time = chrono::system_clock::to_time_t(commit.timestamp());
+      cout << "Date: " << ctime(&time) << endl;
 
       return 0;
     }

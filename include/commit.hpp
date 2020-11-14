@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <deque>
+#include <ctime>
 
 #include <revision.hpp>
 
@@ -30,12 +31,24 @@ class Commit {
     Commit(Revision revision, optional<Revision> parent, const string& message) :
       Commit(revision, parent, nullopt, message) {}
 
+    Revision revision() const {
+      return this->revision_;
+    }
+
     optional<Revision> parent() const {
       return this->parent_;
     }
 
     optional<Revision> merge_parent() const {
       return this->merge_parent_;
+    }
+
+    string message() const {
+      return this->message_;
+    }
+
+    chrono::system_clock::time_point timestamp() const {
+      return this->timestamp_;
     }
 
     deque<Revision> revision_history() const {
@@ -63,7 +76,8 @@ class Commit {
       }
       cout << endl;
 
-      cout << "Date: " << chrono::system_clock::to_time_t(this->timestamp_) << endl;
+      auto time = chrono::system_clock::to_time_t(this->timestamp_);
+      cout << "Date: " << ctime(&time) << endl;
       cout << endl << this->message_ << endl;
     }
 

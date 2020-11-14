@@ -18,6 +18,14 @@ using namespace std;
 
 class Repository {
   public:
+    static vector<Revision> revisions() {
+      vector<Revision> revisions_;
+      for (auto r = 0; r < Repository::current_index().value_or(0); r++) {
+        revisions_.push_back(Revision(r));
+      }
+      return revisions_;
+    }
+
     static optional<Revision> get_head() {
       ifstream head_file;
       head_file.open(string(HEAD));
