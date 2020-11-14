@@ -41,6 +41,9 @@ jobs:
           scoop install ninja
           scoop install gcc
 
+          $env:CC = "${HOME}\scoop\apps\gcc\current\bin\gcc.exe"
+          $env:CXX = "${HOME}\scoop\apps\gcc\current\bin\g++.exe"
+
           cmake -G Ninja -B build
           cmake --build build -v
         shell: powershell
