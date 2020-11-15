@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
-#include <string>
 #include <filesystem>
+#include <iostream>
 #include <regex>
+#include <string>
 
 #include <constants.hpp>
 
@@ -15,55 +15,55 @@ class Revision {
   unsigned long long id_;
 
   public:
-    Revision(string r) {
-      const regex revision_regex("r[0-9]+");
+  Revision(string r) {
+    const regex revision_regex("r[0-9]+");
 
-      if (!regex_match(r, revision_regex)) {
-        cerr << r << " is not a correct revision!" << endl;
-        abort();
-      }
-
-      r.erase(0, 1);
-      id_ = stoull(r, nullptr, 10);
+    if (!regex_match(r, revision_regex)) {
+      cerr << r << " is not a correct revision!" << endl;
+      abort();
     }
 
-    Revision(const unsigned long long& id) {
-      id_ = id;
-    }
+    r.erase(0, 1);
+    id_ = stoull(r, nullptr, 10);
+  }
 
-    unsigned long long id() const {
-      return id_;
-    }
+  Revision(const unsigned long long& id) {
+    id_ = id;
+  }
 
-    string to_string() const {
-      return "r" + std::to_string(id());
-    }
+  unsigned long long id() const {
+    return id_;
+  }
 
-    fs::path directory() const {
-      return fs::path(lit::REVISION_DIR) / this->to_string();
-    }
+  string to_string() const {
+    return "r" + std::to_string(id());
+  }
 
-    fs::path filepath() const {
-      return this->directory() / ".lit";
-    }
+  fs::path directory() const {
+    return fs::path(lit::REVISION_DIR) / this->to_string();
+  }
 
-    fs::path patchpath() const {
-      return this->directory() / ".patch";
-    }
+  fs::path filepath() const {
+    return this->directory() / ".lit";
+  }
 
-    bool exists() const {
-      return fs::exists(directory());
-    }
+  fs::path patchpath() const {
+    return this->directory() / ".patch";
+  }
 
-    static Revision from_id(const string id_string) {
-      return Revision(stoull(id_string, nullptr, 10));
-    }
+  bool exists() const {
+    return fs::exists(directory());
+  }
 
-    bool operator==(const Revision& r) const {
-      return this->id_ == r.id_;
-    }
+  static Revision from_id(const string id_string) {
+    return Revision(stoull(id_string, nullptr, 10));
+  }
 
-    bool operator>(const Revision& r) const {
-      return this->id_ > r.id_;
-    }
+  bool operator==(const Revision& r) const {
+    return this->id_ == r.id_;
+  }
+
+  bool operator>(const Revision& r) const {
+    return this->id_ > r.id_;
+  }
 };

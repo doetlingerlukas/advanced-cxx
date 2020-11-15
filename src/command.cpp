@@ -1,16 +1,16 @@
-#include <string>
 #include <map>
 #include <memory>
+#include <string>
 
 #include <command.hpp>
+#include <commands/checkout.hpp>
+#include <commands/commit.hpp>
 #include <commands/help.hpp>
 #include <commands/init.hpp>
-#include <commands/status.hpp>
-#include <commands/commit.hpp>
-#include <commands/show.hpp>
-#include <commands/checkout.hpp>
-#include <commands/merge.hpp>
 #include <commands/log.hpp>
+#include <commands/merge.hpp>
+#include <commands/show.hpp>
+#include <commands/status.hpp>
 
 map<string, unique_ptr<Command>> Command::create_map() {
   map<string, unique_ptr<Command>> commands;

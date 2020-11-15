@@ -1,54 +1,54 @@
-#include <string>
-#include <iostream>
-#include <vector>
-#include <filesystem>
-#include <fstream>
 #include <chrono>
 #include <ctime>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
-#include <constants.hpp>
 #include <command.hpp>
-#include <diff.hpp>
 #include <commit.hpp>
-#include <revision.hpp>
+#include <constants.hpp>
+#include <diff.hpp>
 #include <repository.hpp>
+#include <revision.hpp>
 
 namespace fs = std::filesystem;
 
 using namespace std;
 
-class CommitCommand: public Command {
+class CommitCommand : public Command {
   public:
-    string name() const {
-      return "commit";
+  string name() const {
+    return "commit";
+  }
+
+  string description() const {
+    return "Create a Commit for all current changes.";
+  }
+
+  int execute(vector<string> arguments) const {
+    if (false) {
+      cerr << "Wrong number of arguments!" << endl;
+      return 1;
     }
 
-    string description() const {
-      return "Create a Commit for all current changes.";
-    }
+    Revision revision(lit::Repository::update_index());
+    fs::create_directories(revision.directory());
 
-    int execute(vector<string> arguments) const {
-      if (false) {
-        cerr << "Wrong number of arguments!" << endl;
-        return 1;
-      }
+    Diff diff;
+    diff.save(revision.patchpath().string());
 
-      Revision revision(lit::Repository::update_index());
-      fs::create_directories(revision.directory());
+    Commit commit(revision, lit::Repository::get_head(), nullopt, arguments.at(0));
+    commit.save();
 
-      Diff diff;
-      diff.save(revision.patchpath().string());
+    lit::Repository::set_head(revision);
+    lit::Repository::set_previous_dir();
 
-      Commit commit(revision, lit::Repository::get_head(), nullopt, arguments.at(0));
-      commit.save();
+    cout << "Commit: " << revision.to_string() << endl;
+    auto time = chrono::system_clock::to_time_t(commit.timestamp());
+    cout << "Date: " << ctime(&time) << endl;
 
-      lit::Repository::set_head(revision);
-      lit::Repository::set_previous_dir();
-
-      cout << "Commit: " << revision.to_string() << endl;
-      auto time = chrono::system_clock::to_time_t(commit.timestamp());
-      cout << "Date: " << ctime(&time) << endl;
-
-      return 0;
-    }
+    return 0;
+  }
 };

@@ -5,8 +5,8 @@
 #define pclose _pclose
 #endif
 
-#include <string>
 #include <array>
+#include <string>
 
 std::pair<int, std::string> system_popen(const std::string& command) {
   std::array<char, 128> buffer;
@@ -19,6 +19,6 @@ std::pair<int, std::string> system_popen(const std::string& command) {
     if (fgets(buffer.data(), 128, pipe) != nullptr) result += buffer.data();
   }
   auto status = pclose(pipe);
-  
+
   return make_pair(status, result);
 }
