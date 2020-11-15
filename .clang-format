@@ -1,6 +1,6 @@
 BasedOnStyle: LLVM
 ColumnLimit: 120
-AccessModifierOffset: 2
+AccessModifierOffset: 0
 AlignConsecutiveMacros: true
 AlignTrailingComments: true
 AlignEscapedNewlines: DontAlign
