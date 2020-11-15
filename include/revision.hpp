@@ -62,4 +62,8 @@ class Revision {
     bool operator==(const Revision& r) const {
       return this->id_ == r.id_;
     }
+
+    bool operator>(const Revision& r) const {
+      return this->id_ > r.id_;
+    }
 };

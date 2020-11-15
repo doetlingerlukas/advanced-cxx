@@ -43,7 +43,7 @@ echo "== Displaying graph"
 # o ← r2 Extend file1 even further
 # o   r1 Extend file1
 # o   r0 Add file1
-#lit log
+lit log
 
 echo "== Inspecting r0"
 lit show r0
@@ -95,7 +95,7 @@ lit commit "Add file2"
 # o │   r2 Extend file1 even further
 # o │   r1 Extend file1
 # o─┘   r0 Add file1
-#lit log
+lit log
 
 echo "== Going back"
 lit checkout r2
@@ -119,7 +119,7 @@ EOF
 # o  │   r2 Extend file1 even further
 # o  │   r1 Extend file1
 # o──┘   r0 Add file1
-#lit log
+lit log
 
 echo "== Setting up a conflict"
 echo >>file1 "Fifth line on top of r4."
@@ -136,7 +136,7 @@ lit commit "Extend file1 another way" # r6
 # o  │    r2 Extend file1 even further
 # o  │    r1 Extend file1
 # o──┘    r0 Add file1
-#lit log
+lit log
 
 # Going back and merging.
 lit checkout r5
@@ -192,7 +192,7 @@ EOF
 # o   │   r2 Extend file1 even further
 # o   │   r1 Extend file1
 # o───┘   r0 Add file1
-#lit log
+lit log
 
 echo "== Cleanup"
 popd

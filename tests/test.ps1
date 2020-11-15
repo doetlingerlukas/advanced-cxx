@@ -42,7 +42,7 @@ Write-Output "== Displaying graph"
 # o ← r2 Extend file1 even further
 # o   r1 Extend file1
 # o   r0 Add file1
-#lit log
+lit log
 
 Write-Output "== Inspecting r0"
 lit show r0
@@ -97,7 +97,7 @@ lit commit "Add file2"
 # │ o   r2 Extend file1 even further
 # │ o   r1 Extend file1
 # o─┘   r0 Add file1
-#lit log
+lit log
 
 Write-Output "== Going back"
 lit checkout r2
@@ -123,7 +123,7 @@ And another line in the second file.
 # o │   r2 Extend file1 even further
 # o │   r1 Extend file1
 # o─┘   r0 Add file1
-#lit log
+lit log
 
 Write-Output "== Setting up a conflict"
 "Fifth line on top of r4." | Out-File ".\file1" -Append
@@ -140,7 +140,7 @@ lit commit "Extend file1 another way" # r6
 # o │   r2 Extend file1 even further
 # o │   r1 Extend file1
 # o─┘   r0 Add file1
-#lit log
+lit log
 
 # Going back and merging.
 lit checkout r5
@@ -197,7 +197,7 @@ Sixth line added during merge conflict.
 # o │   r2 Extend file1 even further
 # o │   r1 Extend file1
 # o─┘   r0 Add file1
-#lit log
+lit log
 
 Write-Output "== Cleanup"
 Set-Location ..

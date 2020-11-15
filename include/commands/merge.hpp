@@ -70,13 +70,8 @@ class MergeCommand: public Command {
       lit::Repository::checkout(base_rev);
       cout << "Base for both branches is: " << base_rev.to_string() << endl;
 
-      cout << "----------------------" << endl;
       const Diff source_diff(fs::absolute(lit::MERGE_SOURCE), true);
-      source_diff.print_status();
-      cout << "----------------------" << endl;
       const Diff head_diff(fs::absolute(lit::MERGE_TARGET), true);
-      head_diff.print_status();
-      cout << "----------------------" << endl;
 
 
       if (head_diff.conflicts_with(source_diff)) {
@@ -132,7 +127,6 @@ class MergeCommand: public Command {
 
         Commit commit(revision, optional<Revision>(head), optional<Revision>(source), ("Merge " + source.to_string() + " into " + head.to_string() + '.'));
         commit.save();
-        cout << "Merge Parent: " << commit.merge_parent().value_or(Revision(100)).to_string() << " should be " << source.to_string() << endl;
 
         lit::Repository::set_head(revision);
         lit::Repository::set_previous_dir();
