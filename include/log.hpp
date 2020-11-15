@@ -30,7 +30,7 @@ class LogLine {
     for (auto i = 0; i < 12 - symbol_.size(); i++) {
       symbol_ += ' ';
     }
-    cout << symbol_ << (head_ ? "<- " : "   ") << revision_.to_string() << "  '" << message_ << "'" << child_ << endl;
+    cout << symbol_ << (head_ ? "<- " : "   ") << revision_.to_string() << "  '" << message_ << "'" << endl;
   }
 
   friend class Log;
@@ -54,7 +54,7 @@ class Log {
             if (l.child_) {
               auto cached_symbol = l.symbol_;
               update_lines(l.revision_);
-              lines.push_back(LogLine(c.revision(), c.message(), "|  " + cached_symbol));
+              lines.push_back(LogLine(c.revision(), c.message(), "|   " + cached_symbol));
             } else {
               l.child_ = true;
               lines.push_back(LogLine(c.revision(), c.message(), l.symbol_));
@@ -65,14 +65,15 @@ class Log {
     }
 
     lines.at(Repository::get_head().value_or(Revision(0)).id()).head_ = true;
+    replace(lines.back().symbol_.begin(), lines.back().symbol_.end(), '|', ' ');
   }
 
   void update_lines(const Revision& revision) {
     for (auto& l : lines) {
       if (l.revision_ == revision) {
-        l.symbol_ += "--|";
+        l.symbol_ += "---|";
       } else if (l.revision_ > revision) {
-        l.symbol_ += "  |";
+        l.symbol_ += "   |";
       }
     }
   }
