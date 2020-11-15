@@ -28,26 +28,3 @@ jobs:
           export PATH="$PWD/build:$PATH"
           
           bash -x ./tests/test.sh
-  
-  windows:
-    runs-on: windows-latest
-    
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Build
-        run: |
-          iwr -useb get.scoop.sh | iex
-          scoop install ninja
-          scoop install gcc
-
-          $env:CC = "${HOME}\scoop\apps\gcc\current\bin\gcc.exe"
-          $env:CXX = "${HOME}\scoop\apps\gcc\current\bin\g++.exe"
-
-          cmake -G Ninja -B build
-          cmake --build build -v
-        shell: powershell
-        
-      - name: Run test
-        run: .\tests\test.ps1
-        shell: powershell
