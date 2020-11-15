@@ -1,0 +1,16 @@
+BasedOnStyle: LLVM
+ColumnLimit: 120
+AccessModifierOffset: 2
+AlignConsecutiveMacros: true
+AlignTrailingComments: true
+AlignEscapedNewlines: DontAlign
+AllowAllConstructorInitializersOnNextLine: true
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: true
+FixNamespaceComments: true
+IndentCaseLabels: true
+IndentWidth: 2
+NamespaceIndentation: None
+KeepEmptyLinesAtTheStartOfBlocks: false
+PointerAlignment: Left
+UseTab: Never
