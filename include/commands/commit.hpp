@@ -39,7 +39,7 @@ class CommitCommand : public Command {
     Diff diff;
     diff.save(revision.patchpath().string());
 
-    Commit commit(revision, lit::Repository::get_head(), nullopt, arguments.at(0));
+    Commit commit(revision, lit::Repository::get_head(), lit::Repository::get_parent_from_merge_conflict(), arguments.at(0));
     commit.save();
 
     lit::Repository::set_head(revision);

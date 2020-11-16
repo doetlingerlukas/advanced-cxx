@@ -73,6 +73,31 @@ class Repository {
     return updated;
   }
 
+  static optional<Revision> get_parent_from_merge_conflict() {
+    if (!fs::exists(fs::path(CONFLICT))) {
+      return nullopt;
+    }
+
+    ifstream merge_conflict_file;
+    merge_conflict_file.open(string(CONFLICT));
+
+    string merge_parent_revision;
+    getline(merge_conflict_file, merge_parent_revision);
+    merge_conflict_file.close();
+
+    if (merge_parent_revision.empty()) {
+      return nullopt;
+    }
+    return optional(Revision::from_id(merge_parent_revision));
+  }
+
+  static void set_parent_for_merge_conflict(const Revision& revision) {
+    ofstream merge_conflict_file;
+    merge_conflict_file.open(string(CONFLICT), ofstream::out | ofstream::trunc);
+    merge_conflict_file << revision.id();
+    merge_conflict_file.close();
+  }
+
   static void clear_previous_dir() {
     for (auto& p : fs::directory_iterator(PREVIOUS_DIR)) {
       fs::remove_all(p);

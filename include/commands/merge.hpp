@@ -118,6 +118,7 @@ class MergeCommand : public Command {
       }
 
       lit::Repository::set_head(head);
+      lit::Repository::set_parent_for_merge_conflict(source);
     } else {
       cout << "Merging " << source.to_string() << " into " << head.to_string() << '.' << endl;
 
