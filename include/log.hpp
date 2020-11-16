@@ -38,11 +38,10 @@ class LogLine {
 
 class Log {
   vector<LogLine> lines;
-  vector<Commit> commits;
 
   public:
   Log() {
-    vector<Commit> commits;
+    vector<Commit> merges;
     for (auto& r : Repository::revisions()) {
       auto c = Commit::parse(r.filepath().string());
 
@@ -53,7 +52,13 @@ class Log {
           if (l.revision_ == c.parent().value()) {
             if (l.child_) {
               auto cached_symbol = l.symbol_;
-              update_lines(l.revision_);
+              for (auto& l : lines) {
+                if (l.revision_ == l.revision_) {
+                  l.symbol_ += "---|";
+                } else if (l.revision_ > l.revision_) {
+                  l.symbol_ += "   |";
+                }
+              }
               lines.push_back(LogLine(c.revision(), c.message(), "|   " + cached_symbol));
             } else {
               l.child_ = true;
@@ -62,20 +67,19 @@ class Log {
           }
         }
       }
+
+      if (c.merge_parent().has_value()) {
+        merges.push_back(c);
+      }
+    }
+
+    for (auto& c : merges) {
+      auto& line = lines.at(c.revision().id());
+      replace(lines.back().symbol_.begin(), lines.back().symbol_.end(), ' ', '-');
     }
 
     lines.at(Repository::get_head().value_or(Revision(0)).id()).head_ = true;
     replace(lines.back().symbol_.begin(), lines.back().symbol_.end(), '|', ' ');
-  }
-
-  void update_lines(const Revision& revision) {
-    for (auto& l : lines) {
-      if (l.revision_ == revision) {
-        l.symbol_ += "---|";
-      } else if (l.revision_ > revision) {
-        l.symbol_ += "   |";
-      }
-    }
   }
 
   void print() {

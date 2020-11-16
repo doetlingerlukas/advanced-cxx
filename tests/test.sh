@@ -114,11 +114,11 @@ diff -s subfolder/file2 - <<-EOF
 	And another line in the second file.
 EOF
 
-# o←┐  ← r4 Merge r3 into r2
-# │ └o   r3 Add file2
-# o  │   r2 Extend file1 even further
-# o  │   r1 Extend file1
-# o──┘   r0 Add file1
+# o─┐ ← r4 Merge r3 into r2
+# │ o   r3 Add file2
+# o │   r2 Extend file1 even further
+# o │   r1 Extend file1
+# o─┘   r0 Add file1
 lit log
 
 echo "== Setting up a conflict"
@@ -129,13 +129,13 @@ lit checkout r3
 echo >>file1 "Third line on top of r3."
 lit commit "Extend file1 another way" # r6
 
-#    o ← r6 Extend file1 another way
-# o  │   r5 Extend file1 one way
-# o←┐│   r4 Merge r3 into r2
-# │ └o   r3 Add file2
-# o  │    r2 Extend file1 even further
-# o  │    r1 Extend file1
-# o──┘    r0 Add file1
+#   o ← r6 Extend file1 another way
+# o │   r5 Extend file1 one way
+# o─┤   r4 Merge r3 into r2
+# │ o   r3 Add file2
+# o │   r2 Extend file1 even further
+# o │   r1 Extend file1
+# o─┘   r0 Add file1
 lit log
 
 # Going back and merging.
@@ -184,14 +184,14 @@ diff -s file1 - <<-EOF
 	Sixth line added during merge conflict.
 EOF
 
-# o←┐   ← r7 Merge r6 into r5
-# │ └─o   r6 Extend file1 another way
-# o   │   r5 Extend file1 one way
-# o←┐ │   r4 Merge r3 into r2
-# │ └─o   r3 Add file2
-# o   │   r2 Extend file1 even further
-# o   │   r1 Extend file1
-# o───┘   r0 Add file1
+# o─┐ ← r7 Merge r6 into r5
+# │ o   r6 Extend file1 another way
+# o │   r5 Extend file1 one way
+# o─┤   r4 Merge r3 into r2
+# │ o   r3 Add file2
+# o │   r2 Extend file1 even further
+# o │   r1 Extend file1
+# o─┘   r0 Add file1
 lit log
 
 echo "== Cleanup"
