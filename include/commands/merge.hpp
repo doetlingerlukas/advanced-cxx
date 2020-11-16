@@ -30,6 +30,8 @@ class MergeCommand : public Command {
       return 1;
     }
 
+    cout << "Starting merge." << endl;
+
     const auto source = Revision(arguments.front());
     const auto head = lit::Repository::get_head().value_or(Revision(0));
     if (!(source.exists() && head.exists()) || source == head) {
@@ -58,7 +60,6 @@ class MergeCommand : public Command {
       auto commit = Commit::parse(head_revisions.at(i).filepath().string());
       try {
         if (commit.merge_parent().has_value()) {
-          cout << "Found merge parent!" << endl;
           if (std::find(source_revisions.begin(), source_revisions.end(), commit.merge_parent().value()) !=
               source_revisions.end()) {
             base_rev = commit.merge_parent().value();
