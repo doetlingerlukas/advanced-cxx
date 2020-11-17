@@ -12,6 +12,8 @@
 
 namespace fs = std::filesystem;
 
+namespace lit {
+
 using namespace std;
 
 class MergeCommand : public Command {
@@ -158,3 +160,5 @@ class MergeCommand : public Command {
     return 0;
   }
 };
+
+} // namespace lit

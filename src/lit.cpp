@@ -16,7 +16,7 @@ int main(int argc, const char* argv[]) {
     return 0;
   }
 
-  auto commands = Command::create_map();
+  auto commands = lit::Command::create_map();
 
   auto search = commands.find(args.front());
   if (search == commands.end()) {

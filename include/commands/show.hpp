@@ -11,6 +11,8 @@
 
 namespace fs = std::filesystem;
 
+namespace lit {
+
 using namespace std;
 
 class ShowCommand : public Command {
@@ -50,3 +52,5 @@ class ShowCommand : public Command {
     return 0;
   }
 };
+
+} // namespace lit

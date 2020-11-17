@@ -12,6 +12,8 @@
 #include <commands/show.hpp>
 #include <commands/status.hpp>
 
+namespace lit {
+
 map<string, unique_ptr<Command>> Command::create_map() {
   map<string, unique_ptr<Command>> commands;
 
@@ -26,3 +28,5 @@ map<string, unique_ptr<Command>> Command::create_map() {
 
   return commands;
 }
+
+} // namespace lit

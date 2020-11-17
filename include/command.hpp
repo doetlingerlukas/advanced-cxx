@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+namespace lit {
+
 using namespace std;
 
 class Command {
@@ -23,3 +25,5 @@ class Command {
 
   static map<string, unique_ptr<Command>> create_map();
 };
+
+} // namespace lit

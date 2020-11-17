@@ -4,6 +4,8 @@
 
 #include <command.hpp>
 
+namespace lit {
+
 using namespace std;
 
 class HelpCommand : public Command {
@@ -32,3 +34,5 @@ class HelpCommand : public Command {
     return 0;
   }
 };
+
+} // namespace lit

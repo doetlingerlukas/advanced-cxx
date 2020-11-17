@@ -9,6 +9,8 @@
 
 namespace fs = std::filesystem;
 
+namespace lit {
+
 using namespace std;
 
 class LogCommand : public Command {
@@ -33,3 +35,5 @@ class LogCommand : public Command {
     return 0;
   }
 };
+
+} // namespace lit

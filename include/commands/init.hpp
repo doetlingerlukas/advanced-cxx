@@ -8,6 +8,8 @@
 
 namespace fs = std::filesystem;
 
+namespace lit {
+
 using namespace std;
 
 class InitCommand : public Command {
@@ -33,3 +35,5 @@ class InitCommand : public Command {
     return 0;
   }
 };
+
+} // namespace lit

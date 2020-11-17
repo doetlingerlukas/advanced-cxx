@@ -6,6 +6,8 @@
 #include <command.hpp>
 #include <diff.hpp>
 
+namespace lit {
+
 using namespace std;
 
 class StatusCommand : public Command {
@@ -30,3 +32,5 @@ class StatusCommand : public Command {
     return 0;
   }
 };
+
+} // namespace lit

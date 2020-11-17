@@ -15,6 +15,8 @@
 
 namespace fs = std::filesystem;
 
+namespace lit {
+
 using namespace std;
 
 class CommitCommand : public Command {
@@ -39,7 +41,8 @@ class CommitCommand : public Command {
     Diff diff;
     diff.save(revision.patchpath().string());
 
-    Commit commit(revision, lit::Repository::get_head(), lit::Repository::get_parent_from_merge_conflict(), arguments.at(0));
+    Commit commit(revision, lit::Repository::get_head(), lit::Repository::get_parent_from_merge_conflict(),
+                  arguments.at(0));
     commit.save();
 
     lit::Repository::set_head(revision);
@@ -52,3 +55,5 @@ class CommitCommand : public Command {
     return 0;
   }
 };
+
+} // namespace lit

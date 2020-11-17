@@ -25,7 +25,8 @@ class LogLine {
   bool merge_;
 
   LogLine(const Revision& revision, const string& message, const string& symbol, optional<Revision> merge)
-      : revision_(revision), message_(message), symbol_(symbol), child_(false), head_(false), merge_(merge.has_value()) {}
+      : revision_(revision), message_(message), symbol_(symbol), child_(false), head_(false),
+        merge_(merge.has_value()) {}
 
   void print() {
     if (merge_) {
