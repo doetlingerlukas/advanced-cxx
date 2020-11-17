@@ -8,8 +8,10 @@ on:
 
 jobs:
   unix:
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
 
@@ -17,7 +19,7 @@ jobs:
         run: |
           brew install ninja
           
-          cmake -G Ninja -B build
+          cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           cmake --build build -v
         env:
           CC: gcc-9
@@ -25,6 +27,6 @@ jobs:
 
       - name: Run test
         run: |
-          export PATH="$PWD/build:$PATH"
+          export PATH="${PWD}/build:${PATH}"
           
           bash -x ./tests/test.sh
