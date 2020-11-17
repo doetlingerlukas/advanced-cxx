@@ -23,14 +23,14 @@ class InitCommand : public Command {
   }
 
   int execute(vector<string> arguments) const override {
-    if (fs::exists(lit::DIR)) {
-      cerr << "Repository already initialized at " << fs::absolute(lit::DIR) << endl;
+    if (fs::exists(DIR)) {
+      cerr << "Repository already initialized at " << fs::absolute(DIR) << endl;
       return 1;
     }
 
-    fs::create_directories(lit::REVISION_DIR);
-    fs::create_directories(lit::PREVIOUS_DIR);
-    cout << "Initialized lit repository at " << fs::absolute(lit::DIR) << endl;
+    fs::create_directories(REVISION_DIR);
+    fs::create_directories(PREVIOUS_DIR);
+    cout << "Initialized lit repository at " << fs::absolute(DIR) << endl;
 
     return 0;
   }

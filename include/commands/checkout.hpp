@@ -34,19 +34,19 @@ class CheckoutCommand : public Command {
       return 1;
     }
 
-    if (arguments.size() == 0 && !lit::Repository::get_head().has_value()) {
-      lit::Repository::clear();
+    if (arguments.size() == 0 && !Repository::get_head().has_value()) {
+      Repository::clear();
       return 0;
     }
 
     const auto revision =
-        arguments.size() == 1 ? Revision(arguments.front()) : Revision(lit::Repository::current_index().value());
+        arguments.size() == 1 ? Revision(arguments.front()) : Revision(Repository::current_index().value());
     if (!fs::exists(revision.directory())) {
       cerr << "Unknown commit." << endl;
       return 1;
     }
 
-    lit::Repository::checkout(revision);
+    Repository::checkout(revision);
 
     cout << "Checkout successful!" << endl;
     cout << "HEAD is now at " << revision.to_string() << endl;

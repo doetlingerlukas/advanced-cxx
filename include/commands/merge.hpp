@@ -35,7 +35,7 @@ class MergeCommand : public Command {
     cout << "Starting merge." << endl;
 
     const auto source = Revision(arguments.front());
-    const auto head = lit::Repository::get_head().value_or(Revision(0));
+    const auto head = Repository::get_head().value_or(Revision(0));
     if (!(source.exists() && head.exists()) || source == head) {
       cerr << "Incompatiple commit supplied." << endl;
       cerr << source.to_string() << " cannot be merged into HEAD " << head.to_string() << endl;
@@ -46,14 +46,14 @@ class MergeCommand : public Command {
     const auto head_commit = Commit::parse(head.filepath().string());
     const auto source_revisions = source_commit.revision_history();
     const auto head_revisions = head_commit.revision_history();
-    fs::create_directory(fs::absolute(lit::MERGE_SOURCE));
-    fs::create_directory(fs::absolute(lit::MERGE_TARGET));
+    fs::create_directory(fs::absolute(MERGE_SOURCE));
+    fs::create_directory(fs::absolute(MERGE_TARGET));
 
     for (auto& r : source_revisions) {
-      Patch::apply(fs::absolute(r.patchpath()), fs::absolute(lit::MERGE_SOURCE));
+      Patch::apply(fs::absolute(r.patchpath()), fs::absolute(MERGE_SOURCE));
     }
     for (auto& r : head_revisions) {
-      Patch::apply(fs::absolute(r.patchpath()), fs::absolute(lit::MERGE_TARGET));
+      Patch::apply(fs::absolute(r.patchpath()), fs::absolute(MERGE_TARGET));
     }
 
     // TODO: refactor
@@ -72,11 +72,11 @@ class MergeCommand : public Command {
       } catch (std::out_of_range const& exc) {
       }
     }
-    lit::Repository::checkout(base_rev);
+    Repository::checkout(base_rev);
     cout << "Base for both branches is: " << base_rev.to_string() << endl;
 
-    const Diff source_diff(fs::absolute(lit::MERGE_SOURCE), true);
-    const Diff head_diff(fs::absolute(lit::MERGE_TARGET), true);
+    const Diff source_diff(fs::absolute(MERGE_SOURCE), true);
+    const Diff head_diff(fs::absolute(MERGE_TARGET), true);
 
     if (head_diff.conflicts_with(source_diff)) {
       const auto conflicts = head_diff.conflicts(source_diff);
@@ -88,10 +88,10 @@ class MergeCommand : public Command {
       for (auto& c : conflicts) {
         cout << "\t - " << c.first << endl;
 
-        if (fs::exists(fs::absolute(lit::MERGE_SOURCE) / fs::path(c.first))) {
+        if (fs::exists(fs::absolute(MERGE_SOURCE) / fs::path(c.first))) {
           const auto target_file = fs::current_path() / fs::path(c.first + "." + source.to_string());
           fs::create_directory(target_file.parent_path());
-          fs::copy(fs::absolute(lit::MERGE_SOURCE) / fs::path(c.first), target_file, copy_option);
+          fs::copy(fs::absolute(MERGE_SOURCE) / fs::path(c.first), target_file, copy_option);
         }
 
         fs::rename(fs::current_path() / fs::path(c.first),
@@ -104,7 +104,7 @@ class MergeCommand : public Command {
           fs::remove(target_file);
         } else {
           fs::create_directory(target_file.parent_path());
-          fs::copy(fs::absolute(lit::MERGE_TARGET) / fs::path(f.first), target_file, copy_option);
+          fs::copy(fs::absolute(MERGE_TARGET) / fs::path(f.first), target_file, copy_option);
         }
       }
 
@@ -115,17 +115,17 @@ class MergeCommand : public Command {
             fs::remove(target_file);
           } else {
             fs::create_directory(target_file.parent_path());
-            fs::copy(fs::absolute(lit::MERGE_SOURCE) / fs::path(f.first), target_file, copy_option);
+            fs::copy(fs::absolute(MERGE_SOURCE) / fs::path(f.first), target_file, copy_option);
           }
         }
       }
 
-      lit::Repository::set_head(head);
-      lit::Repository::set_parent_for_merge_conflict(source);
+      Repository::set_head(head);
+      Repository::set_parent_for_merge_conflict(source);
     } else {
       cout << "Merging " << source.to_string() << " into " << head.to_string() << '.' << endl;
 
-      lit::Repository::checkout(head);
+      Repository::checkout(head);
 
       const auto copy_option = fs::copy_options::overwrite_existing;
       for (auto& f : source_diff.status) {
@@ -134,13 +134,13 @@ class MergeCommand : public Command {
           fs::remove(target_file);
         } else {
           fs::create_directory(target_file.parent_path());
-          fs::copy(fs::absolute(lit::MERGE_SOURCE) / fs::path(f.first), target_file, copy_option);
+          fs::copy(fs::absolute(MERGE_SOURCE) / fs::path(f.first), target_file, copy_option);
         }
       }
 
       cout << "Succesfully merged changes from " << source.to_string() << '.' << endl;
 
-      Revision revision(lit::Repository::update_index());
+      Revision revision(Repository::update_index());
       fs::create_directories(revision.directory());
 
       Diff diff;
@@ -150,12 +150,12 @@ class MergeCommand : public Command {
                     ("Merge " + source.to_string() + " into " + head.to_string() + '.'));
       commit.save();
 
-      lit::Repository::set_head(revision);
-      lit::Repository::set_previous_dir();
+      Repository::set_head(revision);
+      Repository::set_previous_dir();
     }
 
-    fs::remove_all(fs::absolute(lit::MERGE_SOURCE));
-    fs::remove_all(fs::absolute(lit::MERGE_TARGET));
+    fs::remove_all(fs::absolute(MERGE_SOURCE));
+    fs::remove_all(fs::absolute(MERGE_TARGET));
 
     return 0;
   }

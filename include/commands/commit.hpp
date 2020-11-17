@@ -35,21 +35,20 @@ class CommitCommand : public Command {
       return 1;
     }
 
-    Revision revision(lit::Repository::update_index());
+    Revision revision(Repository::update_index());
     fs::create_directories(revision.directory());
 
     Diff diff;
     diff.save(revision.patchpath().string());
 
-    Commit commit(revision, lit::Repository::get_head(), lit::Repository::get_parent_from_merge_conflict(),
-                  arguments.at(0));
+    Commit commit(revision, Repository::get_head(), Repository::get_parent_from_merge_conflict(), arguments.at(0));
     commit.save();
 
-    lit::Repository::set_head(revision);
-    lit::Repository::set_previous_dir();
+    Repository::set_head(revision);
+    Repository::set_previous_dir();
 
     cout << "Commit: " << revision.to_string() << endl;
-    auto time = chrono::system_clock::to_time_t(commit.timestamp());
+    const auto time = chrono::system_clock::to_time_t(commit.timestamp());
     cout << "Date: " << ctime(&time) << endl;
 
     return 0;

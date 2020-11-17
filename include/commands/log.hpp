@@ -29,7 +29,7 @@ class LogCommand : public Command {
       return 1;
     }
 
-    lit::Log log;
+    Log log;
     log.print();
 
     return 0;
