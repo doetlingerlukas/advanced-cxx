@@ -73,6 +73,13 @@ class Log {
     }
   }
 
+  void print() {
+    for (auto it = this->lines.rbegin(); it != lines.rend(); it++) {
+      (*it).print();
+    }
+  }
+
+  private:
   void update_lines(const Revision revision) {
     for (auto& l : lines) {
       if (l.revision_ == revision) {
@@ -80,12 +87,6 @@ class Log {
       } else if (l.revision_ > revision) {
         l.symbol_ += "   |";
       }
-    }
-  }
-
-  void print() {
-    for (auto it = this->lines.rbegin(); it != lines.rend(); it++) {
-      (*it).print();
     }
   }
 };

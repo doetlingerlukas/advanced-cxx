@@ -21,7 +21,7 @@ class Command {
 
   virtual int execute(vector<string> arguments) const {
     return 0;
-  };
+  }
 
   static map<string, unique_ptr<Command>> create_map();
 };

@@ -28,9 +28,6 @@ class Commit {
   Commit(Revision revision, optional<Revision> parent, optional<Revision> merge_parent, const string& message)
       : Commit(revision, parent, merge_parent, message, chrono::system_clock::now()) {}
 
-  Commit(Revision revision, optional<Revision> parent, const string& message)
-      : Commit(revision, parent, nullopt, message) {}
-
   Revision revision() const {
     return this->revision_;
   }

@@ -23,8 +23,6 @@ int main(int argc, const char* argv[]) {
     cerr << "Unknown command: " << args.front() << endl;
     return 1;
   } else {
-    search->second->execute(vector<string>(args.begin() + 1, args.end()));
+    return search->second->execute(vector<string>(args.begin() + 1, args.end()));
   }
-
-  return 0;
 }
