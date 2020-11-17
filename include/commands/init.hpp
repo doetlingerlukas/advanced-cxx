@@ -12,15 +12,15 @@ using namespace std;
 
 class InitCommand : public Command {
   public:
-  string name() const {
+  string name() const override {
     return "init";
   }
 
-  string description() const {
+  string description() const override {
     return "Initializes a repository.";
   }
 
-  int execute(vector<string> arguments) const {
+  int execute(vector<string> arguments) const override {
     if (fs::exists(lit::DIR)) {
       cerr << "Repository already initialized at " << fs::absolute(lit::DIR) << endl;
       return 1;

@@ -8,15 +8,15 @@ using namespace std;
 
 class HelpCommand : public Command {
   public:
-  string name() const {
+  string name() const override {
     return "help";
   }
 
-  string description() const {
+  string description() const override {
     return "Displays the different sub-commands and their options.";
   }
 
-  int execute(vector<string> arguments) const {
+  int execute(vector<string> arguments) const override {
     if (!arguments.empty()) {
       cerr << "No arguments expected for 'help'." << endl;
       return 1;

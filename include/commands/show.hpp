@@ -15,15 +15,15 @@ using namespace std;
 
 class ShowCommand : public Command {
   public:
-  string name() const {
+  string name() const override {
     return "show";
   }
 
-  string description() const {
+  string description() const override {
     return "Inspect a given commit.";
   }
 
-  int execute(vector<string> arguments) const {
+  int execute(vector<string> arguments) const override {
     if (arguments.size() != 1) {
       cerr << "Invalid amount of arguments supplied." << endl;
       return 1;

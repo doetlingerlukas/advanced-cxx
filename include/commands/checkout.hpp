@@ -17,16 +17,16 @@ using namespace std;
 
 class CheckoutCommand : public Command {
   public:
-  string name() const {
+  string name() const override {
     return "checkout";
   }
 
-  string description() const {
+  string description() const override {
     return "Resets the state of all files to the given commit's state. All un-committed changes are dropped upon "
            "checkout.";
   }
 
-  int execute(vector<string> arguments) const {
+  int execute(vector<string> arguments) const override {
     if (arguments.size() > 1) {
       cerr << "Invalid amount of arguments supplied." << endl;
       return 1;

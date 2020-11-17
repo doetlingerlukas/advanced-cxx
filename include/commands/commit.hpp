@@ -19,15 +19,15 @@ using namespace std;
 
 class CommitCommand : public Command {
   public:
-  string name() const {
+  string name() const override {
     return "commit";
   }
 
-  string description() const {
+  string description() const override {
     return "Create a Commit for all current changes.";
   }
 
-  int execute(vector<string> arguments) const {
+  int execute(vector<string> arguments) const override {
     if (false) {
       cerr << "Wrong number of arguments!" << endl;
       return 1;

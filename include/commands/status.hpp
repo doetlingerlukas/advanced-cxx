@@ -10,16 +10,16 @@ using namespace std;
 
 class StatusCommand : public Command {
   public:
-  string name() const {
+  string name() const override {
     return "status";
   }
 
-  string description() const {
+  string description() const override {
     return "Lists all files that have been added, removed, or modified, with respect to the currently checked out "
            "commit.";
   }
 
-  int execute(vector<string> arguments) const {
+  int execute(vector<string> arguments) const override {
     if (arguments.size() > 0) {
       cerr << "No arguments expected!" << endl;
       return 1;
