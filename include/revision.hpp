@@ -9,6 +9,8 @@
 
 namespace fs = std::filesystem;
 
+namespace lit {
+
 using namespace std;
 
 class Revision {
@@ -67,3 +69,5 @@ class Revision {
     return this->id_ > r.id_;
   }
 };
+
+} // namespace lit

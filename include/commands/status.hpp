@@ -29,7 +29,7 @@ class StatusCommand : public Command {
 
     Diff diff;
     diff.print_status();
-    
+
     return 0;
   }
 };

@@ -11,6 +11,8 @@
 
 #include <revision.hpp>
 
+namespace lit {
+
 using namespace std;
 
 class Commit {
@@ -125,3 +127,5 @@ class Commit {
     return Commit(revision, parent, merge_parent, message, timestamp);
   }
 };
+
+} // namespace lit

@@ -13,9 +13,12 @@
 
 namespace fs = std::filesystem;
 
-namespace std {
+namespace lit {
+
+using namespace std;
+
 bool contains_lit_path(const fs::path& base) {
-  auto sub = fs::absolute(lit::DIR);
+  auto sub = fs::absolute(DIR);
   return search(base.begin(), base.end(), sub.begin(), sub.end()) != base.end();
 }
 
@@ -33,7 +36,7 @@ class Diff {
       }
     }
 
-    auto previous = fs::absolute(lit::PREVIOUS_DIR);
+    auto previous = fs::absolute(PREVIOUS_DIR);
     for (auto& p : fs::recursive_directory_iterator(previous)) {
       auto relative = fs::relative(p, previous);
       if (!(p.is_directory() || fs::exists(directory / relative))) {
@@ -79,17 +82,18 @@ class Diff {
 
   private:
   static string build_command(const fs::path& wd, const fs::path& file) {
-    return "diff -uN " + string(lit::PREVIOUS_DIR) + "/" + fs::relative(file, wd).string() + " " +
+    return "diff -uN " + string(PREVIOUS_DIR) + "/" + fs::relative(file, wd).string() + " " +
            fs::relative(file, fs::current_path()).string();
   }
 
   static pair<string, char> get_status(const fs::directory_entry& p, const fs::path& wd) {
     auto relative = fs::relative(p, wd);
-    auto previous = lit::PREVIOUS_DIR / relative;
+    auto previous = PREVIOUS_DIR / relative;
     if (fs::exists(previous)) {
       return make_pair(relative.string(), 'M');
     }
     return make_pair(relative.string(), 'A');
   }
 };
-} // namespace std
+
+} // namespace lit

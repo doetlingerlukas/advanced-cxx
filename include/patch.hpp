@@ -7,6 +7,8 @@
 
 namespace fs = std::filesystem;
 
+namespace lit {
+
 class Patch {
   public:
   static void apply(fs::path patchfile) {
@@ -17,3 +19,5 @@ class Patch {
     system_popen("patch -d " + wd.string() + " -s -p0 -i " + patchfile.string());
   }
 };
+
+} // namespace lit
