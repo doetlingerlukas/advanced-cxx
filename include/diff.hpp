@@ -9,7 +9,7 @@
 #include <string>
 
 #include <constants.hpp>
-#include <sub-process.hpp>
+#include <subprocess.hpp>
 
 namespace fs = std::filesystem;
 

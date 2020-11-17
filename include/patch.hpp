@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string>
 
-#include <sub-process.hpp>
+#include <subprocess.hpp>
 
 namespace fs = std::filesystem;
 
