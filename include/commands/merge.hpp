@@ -98,7 +98,7 @@ class MergeCommand : public Command {
                    fs::current_path() / fs::path(c.first + "." + base_rev.to_string()));
       }
 
-      for (auto& f : head_diff.status) {
+      for (auto& f : head_diff.status()) {
         const auto target_file = fs::current_path() / fs::path(f.first);
         if (f.second == 'D') {
           fs::remove(target_file);
@@ -108,7 +108,7 @@ class MergeCommand : public Command {
         }
       }
 
-      for (auto& f : source_diff.status) {
+      for (auto& f : source_diff.status()) {
         if (!head_diff.status_contains(f.first)) {
           const auto target_file = fs::current_path() / fs::path(f.first);
           if (f.second == 'D') {
@@ -128,7 +128,7 @@ class MergeCommand : public Command {
       Repository::checkout(head);
 
       const auto copy_option = fs::copy_options::overwrite_existing;
-      for (auto& f : source_diff.status) {
+      for (auto& f : source_diff.status()) {
         const auto target_file = fs::current_path() / fs::path(f.first);
         if (f.second == 'D') {
           fs::remove(target_file);
