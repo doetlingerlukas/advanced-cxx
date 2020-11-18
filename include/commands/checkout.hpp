@@ -35,6 +35,7 @@ class CheckoutCommand : public Command {
     }
 
     if (arguments.size() == 0 && !Repository::get_head().has_value()) {
+      cout << "No commit found. Repository will be reset to an empty state!" << endl;
       Repository::clear();
       return 0;
     }
