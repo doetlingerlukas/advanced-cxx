@@ -56,7 +56,6 @@ class MergeCommand : public Command {
       Patch::apply(fs::absolute(r.patchpath()), fs::absolute(MERGE_TARGET));
     }
 
-    // TODO: refactor
     Revision base_rev = head_revisions.at(0);
     for (auto i = 0; i < head_revisions.size(); i++) {
       auto commit = Commit::parse(head_revisions.at(i).filepath().string());
@@ -99,24 +98,12 @@ class MergeCommand : public Command {
       }
 
       for (auto& f : head_diff.status()) {
-        const auto target_file = fs::current_path() / fs::path(f.first);
-        if (f.second == 'D') {
-          fs::remove(target_file);
-        } else {
-          fs::create_directory(target_file.parent_path());
-          fs::copy(fs::absolute(MERGE_TARGET) / fs::path(f.first), target_file, copy_option);
-        }
+        copy_file(f, fs::absolute(MERGE_TARGET));
       }
 
       for (auto& f : source_diff.status()) {
         if (!head_diff.status_contains(f.first)) {
-          const auto target_file = fs::current_path() / fs::path(f.first);
-          if (f.second == 'D') {
-            fs::remove(target_file);
-          } else {
-            fs::create_directory(target_file.parent_path());
-            fs::copy(fs::absolute(MERGE_SOURCE) / fs::path(f.first), target_file, copy_option);
-          }
+          copy_file(f, fs::absolute(MERGE_SOURCE));
         }
       }
 
@@ -127,15 +114,8 @@ class MergeCommand : public Command {
 
       Repository::checkout(head);
 
-      const auto copy_option = fs::copy_options::overwrite_existing;
       for (auto& f : source_diff.status()) {
-        const auto target_file = fs::current_path() / fs::path(f.first);
-        if (f.second == 'D') {
-          fs::remove(target_file);
-        } else {
-          fs::create_directory(target_file.parent_path());
-          fs::copy(fs::absolute(MERGE_SOURCE) / fs::path(f.first), target_file, copy_option);
-        }
+        copy_file(f, fs::absolute(MERGE_SOURCE));
       }
 
       cout << "Succesfully merged changes from " << source.to_string() << '.' << endl;
@@ -158,6 +138,19 @@ class MergeCommand : public Command {
     fs::remove_all(fs::absolute(MERGE_TARGET));
 
     return 0;
+  }
+
+  private:
+  // Copy file to current branch
+  void copy_file(const pair<string, char>& file, const fs::path& location) const {
+    const auto copy_option = fs::copy_options::overwrite_existing;
+    const auto target_file = fs::current_path() / fs::path(file.first);
+    if (file.second == 'D') {
+      fs::remove(target_file);
+    } else {
+      fs::create_directory(target_file.parent_path());
+      fs::copy(location / fs::path(file.first), target_file, copy_option);
+    }
   }
 };
 
